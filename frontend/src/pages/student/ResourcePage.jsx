@@ -33,8 +33,17 @@ export default function ResourcePage({ type, title }) {
         }
     };
 
-    const handleView = (fileUrl) => {
-        window.open(fileUrl, "_blank");
+    const handleView = async (item) => {
+        window.open(item.fileUrl, "_blank");
+
+        // Increment view count in background
+        try {
+            await fetch(`${import.meta.env.VITE_API_URL}/api/upload/view/${type}/${item._id}`, {
+                method: "PATCH"
+            });
+        } catch (error) {
+            console.error("Error incrementing view:", error);
+        }
     };
 
     const handleDownload = async (item) => {
@@ -157,7 +166,7 @@ export default function ResourcePage({ type, title }) {
                                         </span>
                                     </div>
 
-                                    {/* Stats (Mocked where data missing) */}
+                                    {/* Stats (Real Data) */}
                                     <div className="flex items-center justify-between text-sm text-gray-500 mb-5 pt-4 border-t border-gray-50">
                                         <div className="flex items-center gap-1.5">
                                             <div className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center">
@@ -166,13 +175,13 @@ export default function ResourcePage({ type, title }) {
                                             <span className="truncate max-w-[100px] text-xs font-medium">{item.uploaderName || "Admin"}</span>
                                         </div>
                                         <div className="flex items-center gap-3">
-                                            <div className="flex items-center gap-1">
-                                                <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
-                                                <span className="font-semibold text-gray-700">4.8</span>
+                                            <div className="flex items-center gap-1" title="Views">
+                                                <Eye className="w-3.5 h-3.5 text-gray-400" />
+                                                <span className="font-semibold text-gray-700">{item.views || 0}</span>
                                             </div>
-                                            <div className="flex items-center gap-1">
-                                                <Download className="w-3.5 h-3.5" />
-                                                <span className="font-semibold text-gray-700">{item.downloads || 24}</span>
+                                            <div className="flex items-center gap-1" title="Downloads">
+                                                <Download className="w-3.5 h-3.5 text-gray-400" />
+                                                <span className="font-semibold text-gray-700">{item.downloads || 0}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -180,7 +189,7 @@ export default function ResourcePage({ type, title }) {
                                     {/* Action Buttons */}
                                     <div className="grid grid-cols-2 gap-3">
                                         <button
-                                            onClick={() => handleView(item.fileUrl)}
+                                            onClick={() => handleView(item)}
                                             className="flex items-center justify-center gap-2 bg-white border border-indigo-200 text-indigo-600 hover:bg-indigo-50 hover:border-indigo-300 py-2.5 rounded-lg font-semibold text-sm transition-all"
                                         >
                                             <Eye className="w-4 h-4" />

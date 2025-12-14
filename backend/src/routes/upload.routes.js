@@ -453,4 +453,28 @@ router.delete("/pyq/:id", async (req, res) => {
     }
 });
 
+// Increment View Count
+router.patch("/view/:type/:id", async (req, res) => {
+    try {
+        const { type, id } = req.params;
+        let Model;
+
+        if (type === "note") Model = Note;
+        else if (type === "book") Model = Book;
+        else if (type === "pyq") Model = PYQ;
+        else return res.status(400).json({ success: false, message: "Invalid type" });
+
+        const item = await Model.findByIdAndUpdate(id, { $inc: { views: 1 } }, { new: true });
+
+        if (!item) {
+            return res.status(404).json({ success: false, message: "Item not found" });
+        }
+
+        res.json({ success: true, views: item.views });
+    } catch (error) {
+        console.error("Error incrementing view:", error);
+        res.status(500).json({ success: false, message: "Failed to increment view" });
+    }
+});
+
 export default router;
