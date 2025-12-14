@@ -10,8 +10,16 @@ export default function Navbar() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const currentUser = getCurrentUser();
-    setUser(currentUser);
+    const updateUser = () => {
+      const currentUser = getCurrentUser();
+      setUser(currentUser);
+    };
+
+    updateUser(); // Initial load
+
+    // Listen for custom event to update state without reload
+    window.addEventListener("auth-change", updateUser);
+    return () => window.removeEventListener("auth-change", updateUser);
   }, []);
 
   const handleLogout = () => {

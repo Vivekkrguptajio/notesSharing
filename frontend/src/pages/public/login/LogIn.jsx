@@ -30,12 +30,14 @@ export default function LoginPage() {
       const response = await login(formData);
 
       if (response.success) {
+        // Trigger Navbar update
+        window.dispatchEvent(new Event("auth-change"));
+
         const userRole = response.user?.role || "student";
-        // Use window.location.href to force a page reload, ensuring Navbar updates its state
-        if (userRole === "student") window.location.href = "/student/dashboard";
-        else if (userRole === "teacher") window.location.href = "/teacher/dashboard";
-        else if (userRole === "admin") window.location.href = "/admin/dashboard";
-        else window.location.href = "/";
+        if (userRole === "student") navigate("/student/dashboard");
+        else if (userRole === "teacher") navigate("/teacher/dashboard");
+        else if (userRole === "admin") navigate("/admin/dashboard");
+        else navigate("/");
       }
     } catch (err) {
       setError(err.message || "Login failed. Please try again.");
