@@ -160,6 +160,48 @@ router.post("/pyq", async (req, res) => {
 
 // ========== PUBLIC FETCH ROUTES ==========
 
+// Get Public Stats (For Hero Section)
+router.get("/public-stats", async (req, res) => {
+    try {
+        const totalUsers = await User.countDocuments();
+        const activeUsers = await User.countDocuments({ isBlocked: false }); // Or just use totalUsers as "Trusted by"
+
+        const totalNotes = await Note.countDocuments();
+        const totalBooks = await Book.countDocuments();
+        const totalPYQs = await PYQ.countDocuments();
+
+        // Calculate unique subjects (simplified approach using Sets)
+        const noteSubjects = await Note.distinct("subject");
+        const bookSubjects = await Book.distinct("subject");
+        const pyqSubjects = await PYQ.distinct("subject");
+
+        // Normalize subjects to title case or lowercase to avoid duplicates like "Math" vs "math" if needed
+        // For now, assuming direct distinct is fine
+        const uniqueSubjects = new Set([
+            ...noteSubjects,
+            ...bookSubjects,
+            ...pyqSubjects
+        ]);
+
+        res.json({
+            success: true,
+            stats: {
+                totalUsers,
+                activeUsers,
+                totalNotes: totalNotes + totalBooks + totalPYQs, // Aggregate for "Notes Shared" or keep separate? 
+                // Hero says "Notes Shared", let's use Total Resources? 
+                // Or just Notes. Let's return individual too.
+                notesCount: totalNotes,
+                resourcesCount: totalNotes + totalBooks + totalPYQs,
+                subjectsCount: uniqueSubjects.size
+            }
+        });
+    } catch (error) {
+        console.error("Error fetching public stats:", error);
+        res.status(500).json({ success: false, message: "Failed to fetch stats" });
+    }
+});
+
 // Get all Notes
 router.get("/notes", async (req, res) => {
     try {
