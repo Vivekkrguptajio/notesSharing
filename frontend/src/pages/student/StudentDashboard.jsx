@@ -5,7 +5,7 @@ import { getCurrentUser, logout } from "../../api/auth.api";
 import UploaderRequestForm from "../../components/UploaderRequestForm";
 import MyUploadsSection from "../../components/MyUploadsSection";
 import MyDownloadsSection from "../../components/MyDownloadsSection";
-
+import StudentFeedbackSection from "../../components/StudentFeedbackSection";
 export default function StudentDashboard() {
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
@@ -267,6 +267,11 @@ export default function StudentDashboard() {
                         userId={user?.id}
                         onCountsUpdate={setDownloadCounts}
                     />
+                </div>
+
+                {/* Feedback Section */}
+                <div className="mt-6 mb-8">
+                    <StudentFeedbackSection />
                 </div>
             </div>
 

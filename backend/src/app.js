@@ -5,6 +5,7 @@ import adminRoutes from "./routes/admin.routes.js"; // Admin routes
 import uploaderRoutes from "./routes/uploader.routes.js"; // Uploader routes
 import uploadRoutes from "./routes/upload.routes.js"; // Upload routes
 import downloadRoutes from "./routes/download.routes.js"; // Download routes
+import feedbackRoutes from "./routes/feedback.routes.js"; // Feedback routes
 
 const app = express();
 
@@ -45,6 +46,9 @@ app.use("/api/upload", uploadRoutes);
 
 // 🔥 DOWNLOAD ROUTES
 app.use("/api/download", downloadRoutes);
+
+// 🔥 FEEDBACK ROUTES
+app.use("/api/feedback", feedbackRoutes);
 
 // ======================
 // GLOBAL ERROR HANDLER

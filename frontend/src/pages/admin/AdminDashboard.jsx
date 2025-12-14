@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Users, FileText, BookOpen, FileQuestion, Settings, LogOut, UserCheck, Loader } from "lucide-react";
+import { Users, FileText, BookOpen, FileQuestion, Settings, LogOut, UserCheck, Loader, MessageSquare } from "lucide-react";
 import { logout } from "../../api/auth.api";
+import AdminFeedbackSection from "../../components/AdminFeedbackSection";
 
 export default function AdminDashboard() {
     const navigate = useNavigate();
@@ -84,6 +85,11 @@ export default function AdminDashboard() {
                         })}
                     </div>
                 )}
+
+                {/* Feedback Section - Inserted Here */}
+                <div className="mb-8">
+                    <AdminFeedbackSection />
+                </div>
 
                 {/* Menu Grid */}
                 <div className="bg-white rounded-lg shadow p-6">

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Search, Filter, BookOpen, Download, ExternalLink, User, Star, CheckCircle, Eye, FileText } from "lucide-react";
+import { Search, Filter, BookOpen, Download, ExternalLink, User, Star, CheckCircle, Eye, FileText, X } from "lucide-react";
 import { getCurrentUser } from "../../api/auth.api";
 import { useNavigate } from "react-router-dom";
 
@@ -9,12 +9,26 @@ export default function ResourcePage({ type, title }) {
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
     const [user, setUser] = useState(null);
+    const [filters, setFilters] = useState({
+        branch: "",
+        semester: "",
+        subject: "",
+        fileType: "",
+        author: "", // for books
+        examType: "",
+        year: ""
+    });
 
     useEffect(() => {
         const currentUser = getCurrentUser();
         setUser(currentUser);
         fetchItems();
     }, [type]);
+
+    // Derive unique options from items for dynamic dropdowns
+    const uniqueSubjects = [...new Set(items.map(item => item.subject))].sort();
+    const uniqueAuthors = type === 'book' ? [...new Set(items.map(item => item.author))].sort() : [];
+    const uniqueFileTypes = [...new Set(items.map(item => item.fileType))].sort();
 
     const fetchItems = async () => {
         try {
@@ -77,10 +91,27 @@ export default function ResourcePage({ type, title }) {
         }
     };
 
-    const filteredItems = items.filter(item =>
-        item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.subject.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const filteredItems = items.filter(item => {
+        const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            item.subject.toLowerCase().includes(searchQuery.toLowerCase());
+
+        const matchesBranch = filters.branch ? item.branch === filters.branch : true;
+        const matchesSemester = filters.semester ? item.semester.toString() === filters.semester : true;
+
+        // New Filters
+        const matchesSubject = filters.subject ? item.subject === filters.subject : true;
+        const matchesFileType = filters.fileType ? item.fileType === filters.fileType : true;
+        const matchesAuthor = filters.author ? item.author === filters.author : true; // Only for books
+
+        let matchesTypeSpecific = true;
+        if (type === "pyq") {
+            const matchesExam = filters.examType ? item.examType === filters.examType : true;
+            const matchesYear = filters.year ? item.year.toString().includes(filters.year) : true;
+            matchesTypeSpecific = matchesExam && matchesYear;
+        }
+
+        return matchesSearch && matchesBranch && matchesSemester && matchesSubject && matchesFileType && matchesAuthor && matchesTypeSpecific;
+    });
 
     return (
         <div className="min-h-screen bg-gray-50 px-4 py-6 sm:p-6">
@@ -90,9 +121,10 @@ export default function ResourcePage({ type, title }) {
                     <p className="text-gray-600">Browse and download {title.toLowerCase()} shared by students.</p>
                 </div>
 
-                {/* Search and Filter */}
-                <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200 mb-6 flex gap-4">
-                    <div className="flex-1 relative">
+                {/* Search and Filter Container */}
+                <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200 mb-6 space-y-4">
+                    {/* Search Bar */}
+                    <div className="relative">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
                         <input
                             type="text"
@@ -101,6 +133,127 @@ export default function ResourcePage({ type, title }) {
                             placeholder={`Search ${title.toLowerCase()}...`}
                             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
+                    </div>
+
+                    {/* Filters Row */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        {/* Branch Filter */}
+                        <div className="relative">
+                            <select
+                                value={filters.branch}
+                                onChange={(e) => setFilters({ ...filters, branch: e.target.value })}
+                                className="w-full appearance-none pl-4 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-700 text-sm"
+                            >
+                                <option value="">All Branches</option>
+                                <option value="CSE">CSE</option>
+                                <option value="ECE">ECE</option>
+                                <option value="ME">ME</option>
+                                <option value="CE">CE</option>
+                                <option value="EE">EE</option>
+                            </select>
+                            <Filter className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+                        </div>
+
+                        {/* Semester Filter */}
+                        <div className="relative">
+                            <select
+                                value={filters.semester}
+                                onChange={(e) => setFilters({ ...filters, semester: e.target.value })}
+                                className="w-full appearance-none pl-4 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-700 text-sm"
+                            >
+                                <option value="">All Semesters</option>
+                                {[1, 2, 3, 4, 5, 6, 7, 8].map(sem => (
+                                    <option key={sem} value={sem}>Semester {sem}</option>
+                                ))}
+                            </select>
+                            <Filter className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+                        </div>
+
+                        {/* Subject Filter (Dynamic) */}
+                        <div className="relative">
+                            <select
+                                value={filters.subject}
+                                onChange={(e) => setFilters({ ...filters, subject: e.target.value })}
+                                className="w-full appearance-none pl-4 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-700 text-sm"
+                            >
+                                <option value="">All Subjects</option>
+                                {uniqueSubjects.map(subj => (
+                                    <option key={subj} value={subj}>{subj}</option>
+                                ))}
+                            </select>
+                            <Filter className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+                        </div>
+
+                        {/* File Type Filter */}
+                        <div className="relative">
+                            <select
+                                value={filters.fileType}
+                                onChange={(e) => setFilters({ ...filters, fileType: e.target.value })}
+                                className="w-full appearance-none pl-4 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-700 text-sm"
+                            >
+                                <option value="">All Types</option>
+                                {uniqueFileTypes.map(ft => (
+                                    <option key={ft} value={ft}>{ft}</option>
+                                ))}
+                            </select>
+                            <Filter className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+                        </div>
+
+                        {/* Author Filter (Books Only) */}
+                        {type === 'book' && (
+                            <div className="relative">
+                                <select
+                                    value={filters.author}
+                                    onChange={(e) => setFilters({ ...filters, author: e.target.value })}
+                                    className="w-full appearance-none pl-4 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-700 text-sm"
+                                >
+                                    <option value="">All Authors</option>
+                                    {uniqueAuthors.map(auth => (
+                                        <option key={auth} value={auth}>{auth}</option>
+                                    ))}
+                                </select>
+                                <Filter className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+                            </div>
+                        )}
+
+                        {/* PYQ Specific Filters */}
+                        {type === "pyq" && (
+                            <>
+                                <div className="relative">
+                                    <select
+                                        value={filters.examType}
+                                        onChange={(e) => setFilters({ ...filters, examType: e.target.value })}
+                                        className="w-full appearance-none pl-4 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-700 text-sm"
+                                    >
+                                        <option value="">All Exams</option>
+                                        <option value="Mid-1">Mid-1</option>
+                                        <option value="Mid-2">Mid-2</option>
+                                        <option value="End Sem">End Sem</option>
+                                    </select>
+                                    <Filter className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+                                </div>
+                                <div className="relative">
+                                    <input
+                                        type="number"
+                                        value={filters.year}
+                                        onChange={(e) => setFilters({ ...filters, year: e.target.value })}
+                                        placeholder="Year"
+                                        className="w-full pl-4 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                                    />
+                                </div>
+                            </>
+                        )}
+
+                        {(filters.branch || filters.semester || filters.subject || filters.fileType || filters.author || filters.examType || filters.year) && (
+                            <button
+                                onClick={() => setFilters({
+                                    branch: "", semester: "", subject: "", fileType: "", author: "", examType: "", year: ""
+                                })}
+                                className="text-sm text-red-600 font-medium hover:text-red-700 md:col-span-4 lg:col-span-1 justify-self-start flex items-center gap-1"
+                            >
+                                <X size={14} /> Clear {Object.values(filters).filter(Boolean).length} Filters
+                            </button>
+                        )}
                     </div>
                 </div>
 
