@@ -96,6 +96,15 @@ export default function Navbar() {
                     </div>
 
                     <Link
+                      to="/profile"
+                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-indigo-600"
+                      onClick={() => setShowProfileMenu(false)}
+                    >
+                      <User size={16} />
+                      Edit Profile
+                    </Link>
+
+                    <Link
                       to={getDashboardLink()}
                       className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-indigo-600"
                       onClick={() => setShowProfileMenu(false)}
@@ -179,6 +188,14 @@ export default function Navbar() {
 
               {user ? (
                 <>
+                  <Link
+                    to="/profile"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center gap-3 px-4 py-3 text-gray-700 font-medium hover:bg-white hover:text-indigo-600 rounded-xl transition"
+                  >
+                    <User size={20} />
+                    <span className="text-sm">Edit Profile</span>
+                  </Link>
                   <Link
                     to={getDashboardLink()}
                     onClick={() => setIsOpen(false)}

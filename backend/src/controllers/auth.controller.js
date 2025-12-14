@@ -172,3 +172,49 @@ export const login = async (req, res) => {
     });
   }
 };
+
+/* =======================
+   UPDATE PROFILE CONTROLLER
+   ======================= */
+export const updateProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    if (user) {
+      user.fullName = req.body.fullName || user.fullName;
+      user.branch = req.body.branch || user.branch;
+      user.semester = req.body.semester || user.semester;
+
+      if (req.body.password) {
+        user.password = await hashPassword(req.body.password);
+      }
+
+      const updatedUser = await user.save();
+
+      res.json({
+        success: true,
+        message: "Profile updated successfully",
+        user: {
+          id: updatedUser._id,
+          fullName: updatedUser.fullName,
+          registrationNumber: updatedUser.registrationNumber,
+          branch: updatedUser.branch,
+          semester: updatedUser.semester,
+          role: updatedUser.role,
+          isUploader: updatedUser.isUploader
+        },
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+  } catch (error) {
+    console.error("Update Profile Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};

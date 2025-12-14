@@ -40,6 +40,34 @@ export const login = async (credentials) => {
     } catch (error) {
         throw error.response?.data || { message: "Network error. Please try again." };
     }
+}
+
+
+/**
+ * Update Profile API call
+ * @param {Object} userData - User data to update
+ * @returns {Promise} API response
+ */
+export const updateProfile = async (userData) => {
+    try {
+        const token = localStorage.getItem("token");
+        const response = await apiClient.put("/auth/profile", userData, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        // Update local storage if successful
+        if (response.data.success) {
+            localStorage.setItem("user", JSON.stringify(response.data.user));
+            // Trigger Navbar update
+            window.dispatchEvent(new Event("auth-change"));
+        }
+
+        return response.data;
+    } catch (error) {
+        throw error.response?.data || { message: "Network error. Please try again." };
+    }
 };
 
 /**

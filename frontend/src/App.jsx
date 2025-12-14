@@ -13,6 +13,7 @@ import ManageUsers from "./pages/admin/ManageUsers";
 import ManageUploaderRequests from "./pages/admin/ManageUploaderRequests";
 import ManageResources from "./pages/admin/ManageResources";
 import TeacherDashboard from "./pages/teacher/TeacherDashboard";
+import ProfilePage from "./pages/student/ProfilePage";
 
 import Navbar from "./components/common/Navbar";
 
@@ -29,6 +30,7 @@ function App() {
         <Route path="/pyqs" element={<PYQsPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/student/dashboard" element={<StudentDashboard />} />
+        <Route path="/profile" element={<ProfilePage />} />
         <Route path="/student/upload" element={<UploadPage />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="/admin/users" element={<ManageUsers />} />
