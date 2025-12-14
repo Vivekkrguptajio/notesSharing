@@ -477,4 +477,77 @@ router.patch("/view/:type/:id", async (req, res) => {
     }
 });
 
+// Convert Resource Type
+router.post("/convert", async (req, res) => {
+    try {
+        const { id, oldType, newType, data } = req.body;
+
+        if (!id || !oldType || !newType || !data) {
+            return res.status(400).json({ success: false, message: "Missing required fields" });
+        }
+
+        // 1. Identify Models
+        const getModel = (t) => {
+            if (t === "note") return Note;
+            if (t === "book") return Book;
+            if (t === "pyq") return PYQ;
+            return null;
+        };
+
+        const OldModel = getModel(oldType);
+        const NewModel = getModel(newType);
+
+        if (!OldModel || !NewModel) {
+            return res.status(400).json({ success: false, message: "Invalid type" });
+        }
+
+        // 2. Find and Verify Old Document
+        const oldDoc = await OldModel.findById(id);
+        if (!oldDoc) {
+            return res.status(404).json({ success: false, message: "Original item not found" });
+        }
+
+        // 3. Create New Document
+        // We merge oldDoc details (like uploader info, stats) with new data
+        const newDocData = {
+            ...data, // New user inputs (title, subject, branch, etc.)
+            uploadedBy: oldDoc.uploadedBy,
+            uploaderName: oldDoc.uploaderName,
+            downloads: oldDoc.downloads,
+            views: oldDoc.views || 0,
+            // Ensure PYQ specific fields are present if target is PYQ
+            ...(newType === "pyq" ? {
+                examType: data.examType || "Mid-1",
+                year: data.year || new Date().getFullYear()
+            } : {}),
+            // Ensure Book specific fields
+            ...(newType === "book" ? {
+                author: data.author || "Unknown"
+            } : {})
+        };
+
+        // Remove immutable fields to avoid conflicts/errors
+        delete newDocData._id;
+        delete newDocData.__v;
+        delete newDocData.createdAt;
+        delete newDocData.updatedAt;
+        delete newDocData.typeSelected; // Helper field from frontend
+
+        const newDoc = await NewModel.create(newDocData);
+
+        // 4. Delete Old Document
+        await OldModel.findByIdAndDelete(id);
+
+        res.status(201).json({
+            success: true,
+            message: "Resource converted successfully",
+            newItem: newDoc
+        });
+
+    } catch (error) {
+        console.error("Error converting resource:", error);
+        res.status(500).json({ success: false, message: "Failed to convert resource", error: error.message });
+    }
+});
+
 export default router;

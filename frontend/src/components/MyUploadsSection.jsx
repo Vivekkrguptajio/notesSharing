@@ -9,6 +9,9 @@ export default function MyUploadsSection({ userId, onCountsUpdate }) {
     const [editForm, setEditForm] = useState({});
     const [searchQuery, setSearchQuery] = useState("");
 
+    // Fallback to localhost:5000 if env is missing
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
     React.useEffect(() => {
         fetchUploads();
     }, [userId]);
@@ -16,7 +19,7 @@ export default function MyUploadsSection({ userId, onCountsUpdate }) {
     const fetchUploads = async () => {
         try {
             setLoading(true);
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/upload/my-uploads/${userId}`);
+            const response = await fetch(`${API_URL}/api/upload/my-uploads/${userId}`);
             const data = await response.json();
 
             if (data.success) {
@@ -39,25 +42,66 @@ export default function MyUploadsSection({ userId, onCountsUpdate }) {
     const handleUpdate = async () => {
         try {
             const { type, _id } = editingItem;
-            const endpoint = `${import.meta.env.VITE_API_URL}/api/upload/${type}/${_id}`;
+            const selectedType = editForm.typeSelected || type;
+            const isConversion = selectedType !== type;
+
+            let endpoint = `${API_URL}/api/upload/${type}/${_id}`;
+            let method = "PUT";
+            let body = editForm;
+
+            // If Type Changed, use Convert Endpoint
+            if (isConversion) {
+                endpoint = `${API_URL}/api/upload/convert`;
+                method = "POST";
+                body = {
+                    id: _id,
+                    oldType: type,
+                    newType: selectedType,
+                    data: editForm
+                };
+            } else {
+                // Regular Update: Sanitize body
+                const cleanBody = { ...editForm };
+                delete cleanBody._id;
+                delete cleanBody.__v;
+                delete cleanBody.createdAt;
+                delete cleanBody.updatedAt;
+                delete cleanBody.typeSelected;
+                delete cleanBody.uploadedBy;
+                delete cleanBody.uploaderName;
+                delete cleanBody.type; // frontend helper field
+                body = cleanBody;
+            }
+
+            console.log("Sending update to:", endpoint, "Method:", method, "Body:", body);
 
             const response = await fetch(endpoint, {
-                method: "PUT",
+                method,
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(editForm)
+                body: JSON.stringify(body)
             });
 
-            const data = await response.json();
+            const text = await response.text();
+            console.log("Raw Server Response:", text);
+
+            let data;
+            try {
+                data = JSON.parse(text);
+            } catch (e) {
+                throw new Error(`Server returned non-JSON: ${text.substring(0, 100)}...`);
+            }
+
             if (data.success) {
-                alert("✅ Updated successfully!");
+                alert(isConversion ? "✅ Converted & Updated successfully!" : "✅ Updated successfully!");
                 setEditingItem(null);
                 fetchUploads();
             } else {
-                alert(data.message || "Failed to update");
+                console.error("Update failed:", data);
+                alert(`Failed to update: ${data.message}`);
             }
         } catch (error) {
             console.error("Error updating:", error);
-            alert("Failed to update");
+            alert(`Failed to update: ${error.toString()}`);
         }
     };
 
@@ -65,7 +109,7 @@ export default function MyUploadsSection({ userId, onCountsUpdate }) {
         if (!confirm("Are you sure you want to delete this?")) return;
 
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/upload/${type}/${id}`, {
+            const response = await fetch(`${API_URL}/api/upload/${type}/${id}`, {
                 method: "DELETE"
             });
 
@@ -243,6 +287,25 @@ export default function MyUploadsSection({ userId, onCountsUpdate }) {
                         </div>
 
                         <div className="p-6 space-y-4">
+                            {/* Resource Type Selection */}
+                            <div className="bg-blue-50 p-3 rounded-lg border border-blue-100 mb-4">
+                                <label className="block text-xs font-bold text-blue-800 uppercase mb-2">Resource Type</label>
+                                <select
+                                    value={editForm.typeSelected || editingItem.type}
+                                    onChange={(e) => setEditForm({ ...editForm, typeSelected: e.target.value })}
+                                    className="w-full px-3 py-2 bg-white border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-medium text-blue-900"
+                                >
+                                    <option value="note">Note</option>
+                                    <option value="book">Book</option>
+                                    <option value="pyq">PYQ</option>
+                                </select>
+                                {(editForm.typeSelected && editForm.typeSelected !== editingItem.type) && (
+                                    <p className="text-xs text-blue-600 mt-2">
+                                        ℹ️ You are converting this from <b>{editingItem.type.toUpperCase()}</b> to <b>{editForm.typeSelected.toUpperCase()}</b>.
+                                    </p>
+                                )}
+                            </div>
+
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
                                 <input
@@ -253,7 +316,7 @@ export default function MyUploadsSection({ userId, onCountsUpdate }) {
                                 />
                             </div>
 
-                            {editingItem.type === "book" && (
+                            {(editForm.typeSelected === "book" || (!editForm.typeSelected && editingItem.type === "book")) && (
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">Author</label>
                                     <input
@@ -285,7 +348,66 @@ export default function MyUploadsSection({ userId, onCountsUpdate }) {
                                 />
                             </div>
 
-                            {editingItem.type !== "pyq" && editForm.description !== undefined && (
+                            {/* Additional Fields Based on Type */}
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Branch</label>
+                                    <select
+                                        value={editForm.branch || ""}
+                                        onChange={(e) => setEditForm({ ...editForm, branch: e.target.value })}
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    >
+                                        <option value="">Select Branch</option>
+                                        <option value="CSE">CSE</option>
+                                        <option value="ECE">ECE</option>
+                                        <option value="ME">ME</option>
+                                        <option value="CE">CE</option>
+                                        <option value="EE">EE</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Semester</label>
+                                    <select
+                                        value={editForm.semester || ""}
+                                        onChange={(e) => setEditForm({ ...editForm, semester: e.target.value })}
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    >
+                                        <option value="">Select Semester</option>
+                                        {[1, 2, 3, 4, 5, 6, 7, 8].map(sem => (
+                                            <option key={sem} value={sem}>{sem}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+
+                            {/* Dynamically Show PYQ Fields if selected type is PYQ */}
+                            {(editForm.typeSelected === "pyq" || (!editForm.typeSelected && editingItem.type === "pyq")) && (
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Exam Type</label>
+                                        <select
+                                            value={editForm.examType || "Mid-1"}
+                                            onChange={(e) => setEditForm({ ...editForm, examType: e.target.value })}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        >
+                                            <option value="Mid-1">Mid-1</option>
+                                            <option value="Mid-2">Mid-2</option>
+                                            <option value="End Sem">End Sem</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Year</label>
+                                        <input
+                                            type="number"
+                                            value={editForm.year || ""}
+                                            onChange={(e) => setEditForm({ ...editForm, year: e.target.value })}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        />
+                                    </div>
+                                </div>
+                            )}
+
+                            {editForm.description !== undefined && (
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
                                     <textarea
@@ -309,7 +431,7 @@ export default function MyUploadsSection({ userId, onCountsUpdate }) {
                                     className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
                                 >
                                     <Save size={18} />
-                                    Save Changes
+                                    {editForm.typeSelected && editForm.typeSelected !== editingItem.type ? "Convert & Save" : "Save Changes"}
                                 </button>
                             </div>
                         </div>
