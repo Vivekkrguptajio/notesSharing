@@ -16,7 +16,7 @@ export default function ManageUploaderRequests() {
             setLoading(true);
             console.log("🔍 Fetching uploader requests from API...");
 
-            const response = await fetch("http://localhost:5000/api/admin/uploader-requests");
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/uploader-requests`);
             console.log("📡 Response status:", response.status);
 
             if (!response.ok) {
@@ -41,7 +41,7 @@ export default function ManageUploaderRequests() {
         if (adminResponse === null) return; // User cancelled
 
         try {
-            const response = await fetch(`http://localhost:5000/api/admin/uploader-requests/${requestId}/approve`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/uploader-requests/${requestId}/approve`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ adminResponse })
@@ -62,7 +62,7 @@ export default function ManageUploaderRequests() {
         if (!adminResponse) return;
 
         try {
-            const response = await fetch(`http://localhost:5000/api/admin/uploader-requests/${requestId}/reject`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/uploader-requests/${requestId}/reject`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ adminResponse })

@@ -50,7 +50,7 @@ export default function UploadPage() {
         setSuccess("");
 
         try {
-            const response = await fetch("http://localhost:5000/api/upload/note", {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/upload/note`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ userId: user.id, ...noteForm })
@@ -86,7 +86,7 @@ export default function UploadPage() {
         setSuccess("");
 
         try {
-            const response = await fetch("http://localhost:5000/api/upload/book", {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/upload/book`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ userId: user.id, ...bookForm })
@@ -123,7 +123,7 @@ export default function UploadPage() {
         setSuccess("");
 
         try {
-            const response = await fetch("http://localhost:5000/api/upload/pyq", {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/upload/pyq`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ userId: user.id, ...pyqForm })
@@ -197,8 +197,8 @@ export default function UploadPage() {
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
                                 className={`flex items-center gap-2 px-6 py-3 font-medium transition-colors ${activeTab === tab.id
-                                        ? "text-blue-600 border-b-2 border-blue-600"
-                                        : "text-gray-600 hover:text-gray-800"
+                                    ? "text-blue-600 border-b-2 border-blue-600"
+                                    : "text-gray-600 hover:text-gray-800"
                                     }`}
                             >
                                 <Icon size={18} />

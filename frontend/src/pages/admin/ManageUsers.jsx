@@ -16,7 +16,7 @@ export default function ManageUsers() {
     const fetchUsers = async () => {
         try {
             setLoading(true);
-            const response = await fetch("http://localhost:5000/api/admin/users");
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/users`);
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -46,7 +46,7 @@ export default function ManageUsers() {
         if (!confirm(`Are you sure you want to ${action} this user?`)) return;
 
         try {
-            const response = await fetch(`http://localhost:5000/api/admin/users/${userId}/block`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/users/${userId}/block`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ isBlocked: !currentStatus })
@@ -69,7 +69,7 @@ export default function ManageUsers() {
         if (!confirm("Are you sure you want to delete this user? This action cannot be undone!")) return;
 
         try {
-            const response = await fetch(`http://localhost:5000/api/admin/users/${userId}`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/users/${userId}`, {
                 method: "DELETE"
             });
 

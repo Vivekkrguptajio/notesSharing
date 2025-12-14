@@ -29,7 +29,7 @@ export default function UploaderRequestForm({ onClose, userId, userFullName }) {
 
             console.log("📤 Request body:", requestBody);
 
-            const response = await fetch("http://localhost:5000/api/uploader/request", {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/uploader/request`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

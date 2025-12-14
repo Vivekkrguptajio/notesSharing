@@ -29,7 +29,7 @@ export default function StudentDashboard() {
 
     const fetchUploaderRequest = async (userId) => {
         try {
-            const response = await fetch(`http://localhost:5000/api/uploader/request/${userId}`);
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/uploader/request/${userId}`);
             const data = await response.json();
             if (data.success && data.request) {
                 setUploaderRequest(data.request);

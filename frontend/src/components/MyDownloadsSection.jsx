@@ -14,7 +14,7 @@ export default function MyDownloadsSection({ userId, onCountsUpdate }) {
     const fetchDownloads = async () => {
         try {
             setLoading(true);
-            const response = await fetch(`http://localhost:5000/api/download/history/${userId}`);
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/download/history/${userId}`);
             const data = await response.json();
 
             if (data.success) {

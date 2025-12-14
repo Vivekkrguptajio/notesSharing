@@ -19,7 +19,7 @@ export default function ResourcePage({ type, title }) {
     const fetchItems = async () => {
         try {
             setLoading(true);
-            const endpoint = `http://localhost:5000/api/upload/${type}s`;
+            const endpoint = `${import.meta.env.VITE_API_URL}/api/upload/${type}s`;
             const response = await fetch(endpoint);
             const data = await response.json();
 
@@ -50,7 +50,7 @@ export default function ResourcePage({ type, title }) {
 
         // Record download in background
         try {
-            await fetch("http://localhost:5000/api/download/record", {
+            await fetch(`${import.meta.env.VITE_API_URL}/api/download/record`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

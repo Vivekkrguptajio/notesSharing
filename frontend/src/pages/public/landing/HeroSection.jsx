@@ -11,7 +11,7 @@ export default function HeroSection() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/upload/public-stats");
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/upload/public-stats`);
         const data = await response.json();
         if (data.success) {
           setStats({

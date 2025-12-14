@@ -19,7 +19,7 @@ export default function ManageResources({ resourceType, title }) {
         try {
             setLoading(true);
             // Public fetch routes are sufficient for this as they return all items
-            const response = await fetch(`http://localhost:5000/api/upload/${endpointSuffix}`);
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/upload/${endpointSuffix}`);
             const data = await response.json();
 
             if (data.success) {
@@ -36,7 +36,7 @@ export default function ManageResources({ resourceType, title }) {
         if (!window.confirm("Are you sure you want to delete this resource? This action cannot be undone.")) return;
 
         try {
-            const response = await fetch(`http://localhost:5000/api/upload/${resourceType}/${id}`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/upload/${resourceType}/${id}`, {
                 method: "DELETE"
             });
             const data = await response.json();

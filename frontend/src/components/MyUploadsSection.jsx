@@ -16,7 +16,7 @@ export default function MyUploadsSection({ userId, onCountsUpdate }) {
     const fetchUploads = async () => {
         try {
             setLoading(true);
-            const response = await fetch(`http://localhost:5000/api/upload/my-uploads/${userId}`);
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/upload/my-uploads/${userId}`);
             const data = await response.json();
 
             if (data.success) {
@@ -39,7 +39,7 @@ export default function MyUploadsSection({ userId, onCountsUpdate }) {
     const handleUpdate = async () => {
         try {
             const { type, _id } = editingItem;
-            const endpoint = `http://localhost:5000/api/upload/${type}/${_id}`;
+            const endpoint = `${import.meta.env.VITE_API_URL}/api/upload/${type}/${_id}`;
 
             const response = await fetch(endpoint, {
                 method: "PUT",
@@ -65,7 +65,7 @@ export default function MyUploadsSection({ userId, onCountsUpdate }) {
         if (!confirm("Are you sure you want to delete this?")) return;
 
         try {
-            const response = await fetch(`http://localhost:5000/api/upload/${type}/${id}`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/upload/${type}/${id}`, {
                 method: "DELETE"
             });
 
