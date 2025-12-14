@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { BookOpen, FileText, HelpCircle, Upload, LogOut, Star, CheckCircle, Clock, XCircle } from "lucide-react";
 import { getCurrentUser, logout } from "../../api/auth.api";
 import UploaderRequestForm from "../../components/UploaderRequestForm";
+import MyUploadsSection from "../../components/MyUploadsSection";
+import MyDownloadsSection from "../../components/MyDownloadsSection";
 
 export default function StudentDashboard() {
     const navigate = useNavigate();
@@ -10,6 +12,8 @@ export default function StudentDashboard() {
     const [showRequestForm, setShowRequestForm] = useState(false);
     const [uploaderRequest, setUploaderRequest] = useState(null);
     const [loadingRequest, setLoadingRequest] = useState(true);
+    const [uploadCounts, setUploadCounts] = useState({ total: 0 });
+    const [downloadCounts, setDownloadCounts] = useState({ total: 0 });
 
     useEffect(() => {
         const currentUser = getCurrentUser();
@@ -243,15 +247,37 @@ export default function StudentDashboard() {
                         <h4 className="text-sm font-semibold text-gray-900 mb-3">Quick Stats</h4>
                         <div className="grid grid-cols-2 gap-3">
                             <div className="text-center p-3 bg-blue-50 rounded-lg">
-                                <div className="text-xl sm:text-2xl font-bold text-blue-600">24</div>
-                                <div className="text-xs text-gray-600 mt-1">Downloads</div>
+                                <div className="text-xl sm:text-2xl font-bold text-blue-600">
+                                    {downloadCounts.total || 0}
+                                </div>
+                                <div className="text-xs text-gray-600 mt-1">My Downloads</div>
                             </div>
                             <div className="text-center p-3 bg-green-50 rounded-lg">
-                                <div className="text-xl sm:text-2xl font-bold text-green-600">8</div>
-                                <div className="text-xs text-gray-600 mt-1">Uploads</div>
+                                <div className="text-xl sm:text-2xl font-bold text-green-600">
+                                    {uploadCounts.total || 0}
+                                </div>
+                                <div className="text-xs text-gray-600 mt-1">My Uploads</div>
                             </div>
                         </div>
                     </div>
+                </div>
+
+                {/* My Uploads Section - Only for Uploaders */}
+                {user?.isUploader && (
+                    <div className="mt-6">
+                        <MyUploadsSection
+                            userId={user?.id}
+                            onCountsUpdate={setUploadCounts}
+                        />
+                    </div>
+                )}
+
+                {/* My Downloads Section */}
+                <div className="mt-6 mb-8">
+                    <MyDownloadsSection
+                        userId={user?.id}
+                        onCountsUpdate={setDownloadCounts}
+                    />
                 </div>
             </div>
 

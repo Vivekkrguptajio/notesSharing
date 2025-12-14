@@ -1,6 +1,6 @@
 import React from "react";
-import BooksList from "../../../components/books/BooksList";
+import ResourcePage from "../../student/ResourcePage";
 
 export default function BooksPage() {
-    return <BooksList />;
+    return <ResourcePage type="book" title="Reference Books" />;
 }

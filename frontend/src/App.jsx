@@ -11,6 +11,7 @@ import UploadPage from "./pages/student/UploadPage";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import ManageUsers from "./pages/admin/ManageUsers";
 import ManageUploaderRequests from "./pages/admin/ManageUploaderRequests";
+import ManageResources from "./pages/admin/ManageResources";
 import TeacherDashboard from "./pages/teacher/TeacherDashboard";
 
 function App() {
@@ -27,6 +28,9 @@ function App() {
       <Route path="/student/upload" element={<UploadPage />} />
       <Route path="/admin/dashboard" element={<AdminDashboard />} />
       <Route path="/admin/users" element={<ManageUsers />} />
+      <Route path="/admin/notes" element={<ManageResources resourceType="note" title="Manage Notes" />} />
+      <Route path="/admin/books" element={<ManageResources resourceType="book" title="Manage Books" />} />
+      <Route path="/admin/pyqs" element={<ManageResources resourceType="pyq" title="Manage PYQs" />} />
       <Route path="/admin/uploader-requests" element={<ManageUploaderRequests />} />
       <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
     </Routes>

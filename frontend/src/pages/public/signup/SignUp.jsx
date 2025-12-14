@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Eye, EyeOff, Hash, Lock, User, ChevronDown, AlertCircle, CheckCircle } from "lucide-react";
+import { Eye, EyeOff, Hash, Lock, User, ChevronDown, AlertCircle, CheckCircle, ArrowRight, BookOpen, UserPlus } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { signup } from "../../../api/auth.api";
 
@@ -25,7 +25,6 @@ export default function SignUpPage() {
             ...formData,
             [e.target.name]: e.target.value,
         });
-        // Clear errors when user starts typing
         if (error) setError("");
     };
 
@@ -39,9 +38,7 @@ export default function SignUpPage() {
             const response = await signup(formData);
 
             if (response.success) {
-                setSuccess("Account created successfully! Redirecting to login...");
-
-                // Redirect to login page after 2 seconds
+                setSuccess("Account created successfully! Redirecting...");
                 setTimeout(() => {
                     navigate("/login");
                 }, 2000);
@@ -54,202 +51,189 @@ export default function SignUpPage() {
     };
 
     return (
-        <div className="min-h-screen flex flex-col md:flex-row">
-            {/* Left Side - Gradient Background (Desktop Only) */}
-            <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-700 items-center justify-center p-12">
-                <div className="max-w-md text-white">
-                    <h1 className="text-4xl lg:text-5xl font-bold mb-6">
-                        Join the Community
-                    </h1>
-                    <p className="text-lg text-indigo-100">
-                        Start sharing and discovering study notes with thousands of students.
-                    </p>
-                </div>
+        <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gray-900">
+            {/* Animated Background Gradients */}
+            <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
+                <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-purple-600 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-indigo-600 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+                <div className="absolute bottom-[20%] right-[30%] w-[40%] h-[40%] bg-pink-600 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
             </div>
 
-            {/* Right Side - Signup Form */}
-            <div className="flex-1 flex flex-col bg-gray-50">
-                {/* Mobile Header with Gradient */}
-                <div className="md:hidden bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-8">
-                    <h1 className="text-2xl font-bold mb-2">Join the Community</h1>
-                    <p className="text-indigo-100 text-sm">Start sharing and discovering study notes</p>
+            {/* Glassmorphism Card */}
+            <div className="relative z-10 w-full max-w-lg px-4 py-8">
+                <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl p-6 sm:p-8">
+                    {/* Header */}
+                    <div className="text-center mb-8">
+                        <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 mb-4 shadow-lg group hover:scale-110 transition-transform duration-300">
+                            <UserPlus className="w-6 h-6 text-white" />
+                        </div>
+                        <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Create Account</h1>
+                        <p className="text-gray-300 text-sm sm:text-base">
+                            Join the community of students sharing knowledge
+                        </p>
+                    </div>
+
+                    {/* Form */}
+                    <form onSubmit={handleSubmit} className="space-y-5">
+                        {/* Status Messages */}
+                        {error && (
+                            <div className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/20 rounded-lg animate-shake">
+                                <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
+                                <p className="text-sm text-red-200">{error}</p>
+                            </div>
+                        )}
+                        {success && (
+                            <div className="flex items-center gap-2 p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
+                                <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0" />
+                                <p className="text-sm text-green-200">{success}</p>
+                            </div>
+                        )}
+
+                        {/* Full Name */}
+                        <div className="space-y-1.5">
+                            <label className="text-sm font-medium text-gray-300 ml-1">Full Name</label>
+                            <div className="relative group">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <User className="h-5 w-5 text-gray-400 group-focus-within:text-indigo-400 transition-colors" />
+                                </div>
+                                <input
+                                    type="text"
+                                    name="fullName"
+                                    value={formData.fullName}
+                                    onChange={handleChange}
+                                    className="block w-full pl-10 pr-4 py-3 bg-gray-800/50 border border-gray-700/50 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                                    placeholder="Enter your full name"
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        {/* Registration Number */}
+                        <div className="space-y-1.5">
+                            <label className="text-sm font-medium text-gray-300 ml-1">Registration Number</label>
+                            <div className="relative group">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <Hash className="h-5 w-5 text-gray-400 group-focus-within:text-indigo-400 transition-colors" />
+                                </div>
+                                <input
+                                    type="number"
+                                    name="registrationNumber"
+                                    value={formData.registrationNumber}
+                                    onChange={handleChange}
+                                    className="block w-full pl-10 pr-4 py-3 bg-gray-800/50 border border-gray-700/50 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                                    placeholder="Enter your registration no."
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        {/* Branch and Semester Grid */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="space-y-1.5">
+                                <label className="text-sm font-medium text-gray-300 ml-1">Branch</label>
+                                <div className="relative group">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <BookOpen className="h-5 w-5 text-gray-400 group-focus-within:text-indigo-400 transition-colors" />
+                                    </div>
+                                    <select
+                                        name="branch"
+                                        value={formData.branch}
+                                        onChange={handleChange}
+                                        className="block w-full pl-10 pr-10 py-3 bg-gray-800/50 border border-gray-700/50 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all appearance-none"
+                                        required
+                                    >
+                                        <option value="" className="bg-gray-900">Select Branch</option>
+                                        {branches.map((branch) => (
+                                            <option key={branch} value={branch} className="bg-gray-900">{branch}</option>
+                                        ))}
+                                    </select>
+                                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <ChevronDown className="h-4 w-4 text-gray-400" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="space-y-1.5">
+                                <label className="text-sm font-medium text-gray-300 ml-1">Semester</label>
+                                <div className="relative group">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <CheckCircle className="h-5 w-5 text-gray-400 group-focus-within:text-indigo-400 transition-colors" />
+                                    </div>
+                                    <select
+                                        name="semester"
+                                        value={formData.semester}
+                                        onChange={handleChange}
+                                        className="block w-full pl-10 pr-10 py-3 bg-gray-800/50 border border-gray-700/50 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all appearance-none"
+                                        required
+                                    >
+                                        <option value="" className="bg-gray-900">Select Sem</option>
+                                        {semesters.map((sem) => (
+                                            <option key={sem} value={sem} className="bg-gray-900">{sem}</option>
+                                        ))}
+                                    </select>
+                                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <ChevronDown className="h-4 w-4 text-gray-400" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Password */}
+                        <div className="space-y-1.5">
+                            <label className="text-sm font-medium text-gray-300 ml-1">Password</label>
+                            <div className="relative group">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <Lock className="h-5 w-5 text-gray-400 group-focus-within:text-indigo-400 transition-colors" />
+                                </div>
+                                <input
+                                    type={showPassword ? "text" : "password"}
+                                    name="password"
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    className="block w-full pl-10 pr-12 py-3 bg-gray-800/50 border border-gray-700/50 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                                    placeholder="Create a strong password"
+                                    required
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-white transition-colors"
+                                >
+                                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Submit Button */}
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="group relative w-full flex justify-center py-3.5 px-4 border border-transparent rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:ring-offset-gray-900 transition-all transform hover:scale-[1.02] shadow-lg shadow-purple-600/20 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none mt-2"
+                        >
+                            {loading ? (
+                                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                            ) : (
+                                <span className="flex items-center gap-2">
+                                    Create Account <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                </span>
+                            )}
+                        </button>
+                    </form>
+
+                    {/* Footer */}
+                    <div className="mt-8 text-center">
+                        <p className="text-sm text-gray-400">
+                            Already have an account?{" "}
+                            <Link to="/login" className="font-semibold text-indigo-400 hover:text-indigo-300 transition-colors">
+                                Sign In
+                            </Link>
+                        </p>
+                    </div>
                 </div>
 
-                {/* Form Container */}
-                <div className="flex-1 flex items-center justify-center p-6 md:p-8">
-                    <div className="w-full max-w-md">
-                        {/* Logo & Header (Desktop Only) */}
-                        <div className="hidden md:block mb-8">
-                            <div className="flex items-center gap-2 mb-6">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-600 text-white text-xl">
-                                    📘
-                                </div>
-                                <span className="text-lg font-semibold text-gray-900">CampusNotes</span>
-                            </div>
-                            <h2 className="text-3xl font-bold text-gray-900 mb-2">
-                                Create account
-                            </h2>
-                            <p className="text-sm text-gray-600">
-                                Sign up with your registration number to get started
-                            </p>
-                        </div>
-
-                        {/* Mobile Header Text */}
-                        <div className="md:hidden mb-6">
-                            <h2 className="text-xl font-bold text-gray-900 mb-1">
-                                Create account
-                            </h2>
-                            <p className="text-sm text-gray-600">
-                                Sign up to get started
-                            </p>
-                        </div>
-
-
-                        {/* Signup Form */}
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            {/* Error Message */}
-                            {error && (
-                                <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
-                                    <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
-                                    <p className="text-sm text-red-700">{error}</p>
-                                </div>
-                            )}
-
-                            {/* Success Message */}
-                            {success && (
-                                <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-lg">
-                                    <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
-                                    <p className="text-sm text-green-700">{success}</p>
-                                </div>
-                            )}
-
-                            {/* Full Name */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                                    Full Name
-                                </label>
-                                <div className="relative">
-                                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                                    <input
-                                        type="text"
-                                        name="fullName"
-                                        value={formData.fullName}
-                                        onChange={handleChange}
-                                        placeholder="John Doe"
-                                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm bg-white"
-                                        required
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Registration Number */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                                    Registration Number
-                                </label>
-                                <div className="relative">
-                                    <Hash className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                                    <input
-                                        type="number"
-                                        name="registrationNumber"
-                                        value={formData.registrationNumber}
-                                        onChange={handleChange}
-                                        placeholder="e.g., 2021001"
-                                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm bg-white"
-                                        required
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Branch and Semester Row */}
-                            <div className="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                                        Branch
-                                    </label>
-                                    <div className="relative">
-                                        <select
-                                            name="branch"
-                                            value={formData.branch}
-                                            onChange={handleChange}
-                                            className="w-full appearance-none px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm bg-white"
-                                            required
-                                        >
-                                            <option value="">Select</option>
-                                            {branches.map((branch) => (
-                                                <option key={branch} value={branch}>{branch}</option>
-                                            ))}
-                                        </select>
-                                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                                        Semester
-                                    </label>
-                                    <div className="relative">
-                                        <select
-                                            name="semester"
-                                            value={formData.semester}
-                                            onChange={handleChange}
-                                            className="w-full appearance-none px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm bg-white"
-                                            required
-                                        >
-                                            <option value="">Select</option>
-                                            {semesters.map((sem) => (
-                                                <option key={sem} value={sem}>{sem}</option>
-                                            ))}
-                                        </select>
-                                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Password */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                                    Password
-                                </label>
-                                <div className="relative">
-                                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                                    <input
-                                        type={showPassword ? "text" : "password"}
-                                        name="password"
-                                        value={formData.password}
-                                        onChange={handleChange}
-                                        placeholder="••••••••"
-                                        className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-sm bg-white"
-                                        required
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                                    >
-                                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                                    </button>
-                                </div>
-                            </div>
-
-                            {/* Submit Button */}
-                            <button
-                                type="submit"
-                                disabled={loading}
-                                className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 disabled:cursor-not-allowed text-white py-3.5 rounded-lg font-semibold transition-colors shadow-lg hover:shadow-xl text-sm md:text-base"
-                            >
-                                {loading ? "Creating account..." : "Create account"}
-                            </button>
-
-                            {/* Sign In Link */}
-                            <p className="text-center text-sm text-gray-600 pt-2">
-                                Already have an account?{" "}
-                                <Link to="/login" className="text-indigo-600 hover:text-indigo-700 font-semibold">
-                                    Sign in
-                                </Link>
-                            </p>
-                        </form>
-                    </div>
+                {/* Bottom Info text */}
+                <div className="mt-8 text-center text-xs text-gray-500">
+                    <p>© 2024 CampusNotes. Join the revolution.</p>
                 </div>
             </div>
         </div>

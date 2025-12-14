@@ -1,6 +1,6 @@
 import React from "react";
-import NotesList from "../../../components/notes/NotesList";
+import ResourcePage from "../../student/ResourcePage";
 
 export default function NotesPage() {
-    return <NotesList />;
+    return <ResourcePage type="note" title="Study Notes" />;
 }

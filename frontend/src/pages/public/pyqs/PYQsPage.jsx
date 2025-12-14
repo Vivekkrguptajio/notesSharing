@@ -1,6 +1,6 @@
 import React from "react";
-import PYQsList from "../../../components/pyqs/PYQsList";
+import ResourcePage from "../../student/ResourcePage";
 
 export default function PYQsPage() {
-    return <PYQsList />;
+    return <ResourcePage type="pyq" title="Previous Year Questions" />;
 }

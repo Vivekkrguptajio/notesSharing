@@ -90,22 +90,30 @@ router.delete("/users/:id", async (req, res) => {
 // Get user statistics
 router.get("/stats", async (req, res) => {
     try {
+        // Dynamic imports to avoid potential circular dependency issues or just for clean scope if not used elsewhere
+        const Note = (await import("../models/Note.model.js")).default;
+        const Book = (await import("../models/Book.model.js")).default;
+        const PYQ = (await import("../models/PYQ.model.js")).default;
+
         const totalUsers = await User.countDocuments();
         const activeUsers = await User.countDocuments({ isBlocked: false });
-        const blockedUsers = await User.countDocuments({ isBlocked: true });
-        const adminUsers = await User.countDocuments({ role: "admin" });
-        const studentUsers = await User.countDocuments({ role: "student" });
-        const teacherUsers = await User.countDocuments({ role: "teacher" });
+        // const blockedUsers = await User.countDocuments({ isBlocked: true }); // Unused in dashboard for now
+        // const adminUsers = await User.countDocuments({ role: "admin" });
+        // const studentUsers = await User.countDocuments({ role: "student" });
+        // const teacherUsers = await User.countDocuments({ role: "teacher" });
+
+        const totalNotes = await Note.countDocuments();
+        const totalBooks = await Book.countDocuments();
+        const totalPYQs = await PYQ.countDocuments();
 
         res.json({
             success: true,
             stats: {
-                total: totalUsers,
-                active: activeUsers,
-                blocked: blockedUsers,
-                admins: adminUsers,
-                students: studentUsers,
-                teachers: teacherUsers
+                users: totalUsers,
+                activeUsers: activeUsers,
+                notes: totalNotes,
+                books: totalBooks,
+                pyqs: totalPYQs
             }
         });
     } catch (error) {
