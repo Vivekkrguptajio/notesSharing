@@ -54,21 +54,11 @@ export default function AdminDashboard() {
 
     return (
         <div className="min-h-screen bg-gray-100">
-            {/* Simple Header */}
-            <div className="bg-white shadow">
-                <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-                    <h1 className="text-2xl font-bold text-gray-800">Admin Dashboard</h1>
-                    <button
-                        onClick={handleLogout}
-                        className="flex items-center gap-2 text-gray-600 hover:text-gray-800"
-                    >
-                        <LogOut size={20} />
-                        <span>Logout</span>
-                    </button>
-                </div>
-            </div>
+            {/* Header Removed - Global Navbar used */}
 
             <div className="max-w-6xl mx-auto px-4 py-8">
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6">Admin Dashboard</h1>
+
                 {/* Stats Cards */}
                 {loading ? (
                     <div className="flex justify-center items-center py-12">

@@ -1,9 +1,31 @@
-import React, { useState } from "react";
-import { Menu, X } from "lucide-react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Menu, X, User, LogOut, LayoutDashboard, ChevronDown } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { getCurrentUser, logout } from "../../api/auth.api";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [user, setUser] = useState(null);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const currentUser = getCurrentUser();
+    setUser(currentUser);
+  }, []);
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+    window.location.reload(); // Ensure state update on logout
+  };
+
+  const getDashboardLink = () => {
+    if (!user) return "/login";
+    if (user.role === "admin") return "/admin/dashboard";
+    if (user.role === "teacher") return "/teacher/dashboard";
+    return "/student/dashboard";
+  };
 
   const navLinks = [
     { name: "Browse Notes", icon: "📚", to: "/notes" },
@@ -35,6 +57,7 @@ export default function Navbar() {
                 key={link.name}
                 to={link.to}
                 className="hover:text-indigo-600 transition-colors"
+                onClick={() => setShowProfileMenu(false)}
               >
                 {link.name}
               </Link>
@@ -43,19 +66,63 @@ export default function Navbar() {
 
           {/* Right Side Actions */}
           <div className="hidden md:flex items-center gap-3 lg:gap-4">
-            <Link
-              to="/login"
-              className="text-sm font-medium text-gray-700 hover:text-indigo-600 transition-colors"
-            >
-              Log in
-            </Link>
+            {user ? (
+              <div className="relative">
+                <button
+                  onClick={() => setShowProfileMenu(!showProfileMenu)}
+                  className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-indigo-600 transition-colors focus:outline-none"
+                >
+                  <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600">
+                    <User size={18} />
+                  </div>
+                  <span>{user.fullName || "User"}</span>
+                  <ChevronDown size={16} className={`transition-transform ${showProfileMenu ? "rotate-180" : ""}`} />
+                </button>
 
-            <Link
-              to="/signup"
-              className="rounded-lg bg-indigo-600 px-4 lg:px-5 py-2 lg:py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 transition-all shadow-sm hover:shadow-md"
-            >
-              Get Started
-            </Link>
+                {/* Dropdown Menu */}
+                {showProfileMenu && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-1 origin-top-right transform transition-all">
+                    <div className="px-4 py-3 border-b border-gray-100">
+                      <p className="text-sm font-medium text-gray-900 truncate">{user.fullName}</p>
+                      <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                    </div>
+
+                    <Link
+                      to={getDashboardLink()}
+                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-indigo-600"
+                      onClick={() => setShowProfileMenu(false)}
+                    >
+                      <LayoutDashboard size={16} />
+                      Dashboard
+                    </Link>
+
+                    <button
+                      onClick={handleLogout}
+                      className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50"
+                    >
+                      <LogOut size={16} />
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="text-sm font-medium text-gray-700 hover:text-indigo-600 transition-colors"
+                >
+                  Log in
+                </Link>
+
+                <Link
+                  to="/signup"
+                  className="rounded-lg bg-indigo-600 px-4 lg:px-5 py-2 lg:py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 transition-all shadow-sm hover:shadow-md"
+                >
+                  Get Started
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -73,6 +140,21 @@ export default function Navbar() {
           <div className="md:hidden pb-3">
             <div className="bg-gray-50 rounded-2xl p-3 space-y-1.5 shadow-inner">
 
+              {/* User Info Mobile */}
+              {user && (
+                <div className="px-4 py-3 border-b border-gray-200 mb-2">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600">
+                      <User size={20} />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-gray-900">{user.fullName}</p>
+                      <p className="text-xs text-gray-500">{user.role}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {navLinks.map((link) => (
                 <Link
                   key={link.name}
@@ -87,22 +169,47 @@ export default function Navbar() {
 
               <div className="border-t border-gray-300 my-2"></div>
 
-              <Link
-                to="/login"
-                onClick={() => setIsOpen(false)}
-                className="block px-4 py-2.5 text-center text-sm text-gray-700 font-medium hover:bg-white rounded-xl"
-              >
-                Log in
-              </Link>
+              {user ? (
+                <>
+                  <Link
+                    to={getDashboardLink()}
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center gap-3 px-4 py-3 text-gray-700 font-medium hover:bg-white hover:text-indigo-600 rounded-xl transition"
+                  >
+                    <LayoutDashboard size={20} />
+                    <span className="text-sm">Dashboard</span>
+                  </Link>
+                  <button
+                    onClick={() => {
+                      setIsOpen(false);
+                      handleLogout();
+                    }}
+                    className="w-full flex items-center gap-3 px-4 py-3 text-red-600 font-medium hover:bg-red-50 rounded-xl transition text-left"
+                  >
+                    <LogOut size={20} />
+                    <span className="text-sm">Logout</span>
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    to="/login"
+                    onClick={() => setIsOpen(false)}
+                    className="block px-4 py-2.5 text-center text-sm text-gray-700 font-medium hover:bg-white rounded-xl"
+                  >
+                    Log in
+                  </Link>
 
-              <Link
-                to="/signup"
-                onClick={() => setIsOpen(false)}
-                className="flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white hover:bg-indigo-700 shadow"
-              >
-                <span>Get Started</span>
-                <span>→</span>
-              </Link>
+                  <Link
+                    to="/signup"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white hover:bg-indigo-700 shadow"
+                  >
+                    <span>Get Started</span>
+                    <span>→</span>
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         )}
