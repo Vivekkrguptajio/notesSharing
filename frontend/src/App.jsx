@@ -7,7 +7,10 @@ import BooksPage from "./pages/public/books/BooksPage";
 import PYQsPage from "./pages/public/pyqs/PYQsPage";
 import AboutPage from "./pages/public/about/AboutPage";
 import StudentDashboard from "./pages/student/StudentDashboard";
+import UploadPage from "./pages/student/UploadPage";
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import ManageUsers from "./pages/admin/ManageUsers";
+import ManageUploaderRequests from "./pages/admin/ManageUploaderRequests";
 import TeacherDashboard from "./pages/teacher/TeacherDashboard";
 
 function App() {
@@ -21,7 +24,10 @@ function App() {
       <Route path="/pyqs" element={<PYQsPage />} />
       <Route path="/about" element={<AboutPage />} />
       <Route path="/student/dashboard" element={<StudentDashboard />} />
+      <Route path="/student/upload" element={<UploadPage />} />
       <Route path="/admin/dashboard" element={<AdminDashboard />} />
+      <Route path="/admin/users" element={<ManageUsers />} />
+      <Route path="/admin/uploader-requests" element={<ManageUploaderRequests />} />
       <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
     </Routes>
   );

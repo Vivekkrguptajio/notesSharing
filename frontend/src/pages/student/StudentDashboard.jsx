@@ -1,116 +1,273 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { Upload, BookOpen, FileText, Download, Star, TrendingUp, Award, Users } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { BookOpen, FileText, HelpCircle, Upload, LogOut, Star, CheckCircle, Clock, XCircle } from "lucide-react";
+import { getCurrentUser, logout } from "../../api/auth.api";
+import UploaderRequestForm from "../../components/UploaderRequestForm";
 
 export default function StudentDashboard() {
-    const stats = [
-        { icon: Download, label: "Downloads", value: "24", color: "bg-blue-100 text-blue-600" },
-        { icon: Upload, label: "Uploads", value: "8", color: "bg-green-100 text-green-600" },
-        { icon: Star, label: "Points", value: "156", color: "bg-yellow-100 text-yellow-600" },
-        { icon: Award, label: "Rank", value: "#42", color: "bg-purple-100 text-purple-600" }
+    const navigate = useNavigate();
+    const [user, setUser] = useState(null);
+    const [showRequestForm, setShowRequestForm] = useState(false);
+    const [uploaderRequest, setUploaderRequest] = useState(null);
+    const [loadingRequest, setLoadingRequest] = useState(true);
+
+    useEffect(() => {
+        const currentUser = getCurrentUser();
+
+        if (!currentUser) {
+            navigate("/login");
+        } else {
+            setUser(currentUser);
+            // Use 'id' instead of '_id' as that's what's stored in localStorage
+            fetchUploaderRequest(currentUser.id);
+        }
+    }, [navigate]);
+
+    const fetchUploaderRequest = async (userId) => {
+        try {
+            const response = await fetch(`http://localhost:5000/api/uploader/request/${userId}`);
+            const data = await response.json();
+            if (data.success && data.request) {
+                setUploaderRequest(data.request);
+            }
+        } catch (error) {
+            console.error("Error fetching uploader request:", error);
+        } finally {
+            setLoadingRequest(false);
+        }
+    };
+
+    const handleLogout = () => {
+        logout();
+    };
+
+    const allQuickActions = [
+        {
+            icon: BookOpen,
+            title: "Notes",
+            description: "Browse study notes",
+            to: "/notes",
+            iconBg: "bg-blue-50",
+            iconColor: "text-blue-600"
+        },
+        {
+            icon: BookOpen,
+            title: "Books",
+            description: "Find reference books",
+            to: "/books",
+            iconBg: "bg-green-50",
+            iconColor: "text-green-600"
+        },
+        {
+            icon: HelpCircle,
+            title: "PYQs",
+            description: "Previous year papers",
+            to: "/pyqs",
+            iconBg: "bg-purple-50",
+            iconColor: "text-purple-600"
+        },
+        {
+            icon: Upload,
+            title: "Upload",
+            description: "Share your materials",
+            to: "/student/upload",
+            iconBg: "bg-orange-50",
+            iconColor: "text-orange-600",
+            requiresUploader: true  // Only show if user is uploader
+        }
     ];
 
-    const recentDownloads = [
-        { title: "Data Structures Notes", subject: "CS", date: "2 hours ago" },
-        { title: "DBMS Complete Guide", subject: "CS", date: "1 day ago" },
-        { title: "OS Concepts Book", subject: "CS", date: "2 days ago" }
-    ];
-
-    const quickActions = [
-        { icon: Upload, title: "Upload Notes", description: "Share your study materials", to: "/student/upload", color: "from-indigo-600 to-purple-600" },
-        { icon: BookOpen, title: "Browse Notes", description: "Find study materials", to: "/notes", color: "from-blue-600 to-indigo-600" },
-        { icon: FileText, title: "My Uploads", description: "Manage your content", to: "/student/uploads", color: "from-green-600 to-teal-600" }
-    ];
+    // Filter actions based on uploader status
+    const quickActions = allQuickActions.filter(action => {
+        if (action.requiresUploader) {
+            return user?.isUploader === true;
+        }
+        return true;
+    });
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-50">
+        <div className="min-h-screen bg-gray-50">
             {/* Header */}
-            <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+            <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+                <div className="max-w-6xl mx-auto px-4 py-4">
                     <div className="flex items-center justify-between">
                         <div>
-                            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2">
-                                Welcome back, Student! 👋
+                            <h1 className="text-lg sm:text-xl font-bold text-gray-900">
+                                Hi, {user?.fullName?.split(' ')[0] || "Student"}! 👋
                             </h1>
-                            <p className="text-sm sm:text-base text-indigo-100">
-                                Here's what's happening with your account today
+                            <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
+                                {user?.registrationNumber}
                             </p>
                         </div>
+                        <button
+                            onClick={handleLogout}
+                            className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                        >
+                            <LogOut className="w-4 h-4" />
+                            <span className="hidden sm:inline">Logout</span>
+                        </button>
                     </div>
                 </div>
             </div>
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 -mt-8">
-                {/* Stats Grid */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
-                    {stats.map((stat, index) => {
-                        const Icon = stat.icon;
-                        return (
-                            <div key={index} className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-200">
-                                <div className={`inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-lg ${stat.color} mb-3`}>
-                                    <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
-                                </div>
-                                <div className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">{stat.value}</div>
-                                <div className="text-xs sm:text-sm text-gray-600">{stat.label}</div>
-                            </div>
-                        );
-                    })}
+            {/* Main Content */}
+            <div className="max-w-6xl mx-auto px-4 py-6 sm:py-8">
+                {/* Welcome Card */}
+                <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl p-6 sm:p-8 text-white mb-6">
+                    <h2 className="text-xl sm:text-2xl font-bold mb-2">
+                        Welcome to Your Dashboard
+                    </h2>
+                    <p className="text-sm sm:text-base text-indigo-100">
+                        Access notes, books, and previous year questions all in one place
+                    </p>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
-                    {/* Quick Actions */}
-                    <div className="lg:col-span-2">
-                        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">Quick Actions</h2>
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            {quickActions.map((action, index) => {
-                                const Icon = action.icon;
-                                return (
-                                    <Link
-                                        key={index}
-                                        to={action.to}
-                                        className={`bg-gradient-to-br ${action.color} text-white rounded-xl p-6 hover:shadow-lg transition-all group`}
-                                    >
-                                        <Icon className="w-8 h-8 mb-4 group-hover:scale-110 transition-transform" />
-                                        <h3 className="text-lg font-bold mb-2">{action.title}</h3>
-                                        <p className="text-sm text-white/80">{action.description}</p>
-                                    </Link>
-                                );
-                            })}
-                        </div>
-                    </div>
-
-                    {/* Recent Downloads */}
-                    <div>
-                        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">Recent Downloads</h2>
-                        <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-200">
-                            <div className="space-y-4">
-                                {recentDownloads.map((item, index) => (
-                                    <div key={index} className="flex items-start gap-3 pb-4 border-b border-gray-100 last:border-0 last:pb-0">
-                                        <div className="flex-shrink-0 w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
-                                            <FileText className="w-5 h-5 text-indigo-600" />
+                {/* Uploader Request Banner */}
+                {!loadingRequest && !user?.isUploader && (
+                    <div className="mb-6">
+                        {!uploaderRequest || uploaderRequest.status === "rejected" ? (
+                            // Show "Become Uploader" banner
+                            <div className="bg-gradient-to-r from-orange-500 to-pink-600 rounded-xl p-6 text-white">
+                                <div className="flex items-start justify-between gap-4">
+                                    <div className="flex-1">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <Star className="w-5 h-5" />
+                                            <h3 className="text-lg font-bold">Want to Become an Uploader?</h3>
                                         </div>
-                                        <div className="flex-1 min-w-0">
-                                            <h4 className="text-sm font-semibold text-gray-900 truncate">{item.title}</h4>
-                                            <p className="text-xs text-gray-500">{item.subject} • {item.date}</p>
-                                        </div>
+                                        <p className="text-sm text-orange-50 mb-4">
+                                            Share your notes, books, and PYQs with the community. Get verified by admin!
+                                        </p>
+                                        <button
+                                            onClick={() => setShowRequestForm(true)}
+                                            className="bg-white text-orange-600 px-6 py-2.5 rounded-lg font-semibold hover:bg-orange-50 transition-colors"
+                                        >
+                                            Apply Now →
+                                        </button>
                                     </div>
-                                ))}
+                                </div>
+                            </div>
+                        ) : uploaderRequest.status === "pending" ? (
+                            // Show pending status
+                            <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6">
+                                <div className="flex items-start gap-4">
+                                    <div className="bg-yellow-100 p-3 rounded-lg">
+                                        <Clock className="w-6 h-6 text-yellow-600" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <h3 className="text-lg font-bold text-gray-900 mb-1">
+                                            Request Pending
+                                        </h3>
+                                        <p className="text-sm text-gray-600">
+                                            Your uploader request is under review. Admin will notify you soon!
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : uploaderRequest.status === "approved" ? (
+                            // Show approved status
+                            <div className="bg-green-50 border border-green-200 rounded-xl p-6">
+                                <div className="flex items-start gap-4">
+                                    <div className="bg-green-100 p-3 rounded-lg">
+                                        <CheckCircle className="w-6 h-6 text-green-600" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <h3 className="text-lg font-bold text-gray-900 mb-1">
+                                            🎉 You're an Uploader!
+                                        </h3>
+                                        <p className="text-sm text-gray-600 mb-2">
+                                            {uploaderRequest.adminResponse || "Your request has been approved!"}
+                                        </p>
+                                        <Link
+                                            to="/student/upload"
+                                            className="inline-block bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700 transition-colors"
+                                        >
+                                            Start Uploading
+                                        </Link>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : null}
+                    </div>
+                )}
+
+                {/* Quick Access Grid */}
+                <div className="mb-8">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Access</h3>
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                        {quickActions.map((action, index) => {
+                            const Icon = action.icon;
+                            return (
+                                <Link
+                                    key={index}
+                                    to={action.to}
+                                    className="bg-white rounded-xl p-4 sm:p-6 border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all group"
+                                >
+                                    <div className={`inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-lg ${action.iconBg} mb-3 group-hover:scale-110 transition-transform`}>
+                                        <Icon className={`w-5 h-5 sm:w-6 sm:h-6 ${action.iconColor}`} />
+                                    </div>
+                                    <h4 className="text-sm sm:text-base font-semibold text-gray-900 mb-1">
+                                        {action.title}
+                                    </h4>
+                                    <p className="text-xs sm:text-sm text-gray-500">
+                                        {action.description}
+                                    </p>
+                                </Link>
+                            );
+                        })}
+                    </div>
+                </div>
+
+                {/* Info Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* Profile Info */}
+                    <div className="bg-white rounded-xl p-5 border border-gray-200">
+                        <h4 className="text-sm font-semibold text-gray-900 mb-3">Your Profile</h4>
+                        <div className="space-y-2 text-sm">
+                            <div className="flex justify-between">
+                                <span className="text-gray-600">Name:</span>
+                                <span className="font-medium text-gray-900">{user?.fullName}</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-gray-600">Reg. No:</span>
+                                <span className="font-medium text-gray-900">{user?.registrationNumber}</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-gray-600">Role:</span>
+                                <span className="font-medium text-gray-900 capitalize">{user?.role}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Quick Stats */}
+                    <div className="bg-white rounded-xl p-5 border border-gray-200">
+                        <h4 className="text-sm font-semibold text-gray-900 mb-3">Quick Stats</h4>
+                        <div className="grid grid-cols-2 gap-3">
+                            <div className="text-center p-3 bg-blue-50 rounded-lg">
+                                <div className="text-xl sm:text-2xl font-bold text-blue-600">24</div>
+                                <div className="text-xs text-gray-600 mt-1">Downloads</div>
+                            </div>
+                            <div className="text-center p-3 bg-green-50 rounded-lg">
+                                <div className="text-xl sm:text-2xl font-bold text-green-600">8</div>
+                                <div className="text-xs text-gray-600 mt-1">Uploads</div>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                {/* Activity Section */}
-                <div className="mt-8 bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-                    <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Your Activity</h2>
-                    <div className="flex items-center gap-4 text-sm text-gray-600">
-                        <div className="flex items-center gap-2">
-                            <TrendingUp className="w-5 h-5 text-green-600" />
-                            <span>You're in the top 15% of contributors this month!</span>
-                        </div>
-                    </div>
-                </div>
             </div>
+
+            {/* Uploader Request Form Modal */}
+            {showRequestForm && (
+                <UploaderRequestForm
+                    onClose={() => {
+                        setShowRequestForm(false);
+                        if (user?.id) {
+                            fetchUploaderRequest(user.id);
+                        }
+                    }}
+                    userId={user?.id}
+                    userFullName={user?.fullName}
+                />
+            )}
         </div>
     );
 }
