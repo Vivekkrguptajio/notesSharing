@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { getCurrentUser } from "../../../api/auth.api";
 
 export default function HeroSection() {
+  const [user, setUser] = useState(null);
   const [stats, setStats] = useState({
     users: 0,
     resources: 0,
@@ -9,6 +11,9 @@ export default function HeroSection() {
   });
 
   useEffect(() => {
+    const currentUser = getCurrentUser();
+    setUser(currentUser);
+
     const fetchStats = async () => {
       try {
         const response = await fetch(`${import.meta.env.VITE_API_URL}/api/upload/public-stats`);
@@ -45,10 +50,20 @@ export default function HeroSection() {
 
           {/* Main Heading */}
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight px-2">
-            Share Knowledge.{" "}
-            <span className="text-indigo-600">Learn Better.</span>
-            <br className="hidden sm:block" />
-            <span className="block sm:inline"> Grow Together.</span>
+            {user ? (
+              <>
+                Hi, <span className="text-indigo-600">{user.fullName.split(' ')[0]}</span>! 👋
+                <br className="hidden sm:block" />
+                <span className="block sm:inline"> Ready to Learn?</span>
+              </>
+            ) : (
+              <>
+                Share Knowledge.{" "}
+                <span className="text-indigo-600">Learn Better.</span>
+                <br className="hidden sm:block" />
+                <span className="block sm:inline"> Grow Together.</span>
+              </>
+            )}
           </h1>
 
           {/* Subtitle */}
@@ -59,13 +74,23 @@ export default function HeroSection() {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-12 sm:mb-16 md:mb-20 px-4">
-            <Link
-              to="/signup"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-6 sm:px-8 py-3.5 sm:py-3 text-sm sm:text-base font-semibold text-white hover:bg-indigo-700 transition-all shadow-lg hover:shadow-xl"
-            >
-              Get Started Free
-              <span>→</span>
-            </Link>
+            {user ? (
+              <Link
+                to={user.role === 'admin' ? '/admin/dashboard' : user.role === 'teacher' ? '/teacher/dashboard' : '/student/dashboard'}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-6 sm:px-8 py-3.5 sm:py-3 text-sm sm:text-base font-semibold text-white hover:bg-indigo-700 transition-all shadow-lg hover:shadow-xl"
+              >
+                Go to Dashboard
+                <span>→</span>
+              </Link>
+            ) : (
+              <Link
+                to="/signup"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-6 sm:px-8 py-3.5 sm:py-3 text-sm sm:text-base font-semibold text-white hover:bg-indigo-700 transition-all shadow-lg hover:shadow-xl"
+              >
+                Get Started Free
+                <span>→</span>
+              </Link>
+            )}
             <Link
               to="/notes"
               className="w-full sm:w-auto rounded-xl bg-white border-2 border-gray-200 px-6 sm:px-8 py-3.5 sm:py-3 text-sm sm:text-base font-semibold text-gray-900 hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm"

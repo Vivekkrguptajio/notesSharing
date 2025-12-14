@@ -31,10 +31,11 @@ export default function LoginPage() {
 
       if (response.success) {
         const userRole = response.user?.role || "student";
-        if (userRole === "student") navigate("/student/dashboard");
-        else if (userRole === "teacher") navigate("/teacher/dashboard");
-        else if (userRole === "admin") navigate("/admin/dashboard");
-        else navigate("/");
+        // Use window.location.href to force a page reload, ensuring Navbar updates its state
+        if (userRole === "student") window.location.href = "/student/dashboard";
+        else if (userRole === "teacher") window.location.href = "/teacher/dashboard";
+        else if (userRole === "admin") window.location.href = "/admin/dashboard";
+        else window.location.href = "/";
       }
     } catch (err) {
       setError(err.message || "Login failed. Please try again.");

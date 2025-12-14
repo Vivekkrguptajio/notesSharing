@@ -53,7 +53,7 @@ export default function MyDownloadsSection({ userId, onCountsUpdate }) {
             <div className="space-y-4">
                 {downloads.map((item) => (
                     <div key={item._id} className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow flex items-center justify-between">
-                        <div>
+                        <div className="flex-1 min-w-0 mr-4">
                             <div className="flex items-center gap-2 mb-1">
                                 <h4 className="font-medium text-gray-900">{item.itemTitle}</h4>
                                 <span className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-full">
