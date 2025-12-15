@@ -142,14 +142,24 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Mobile Menu Button */}
-          <button
-            className="md:hidden p-2 text-gray-700 hover:bg-gray-100 rounded-lg transition"
-            onClick={() => setIsOpen(!isOpen)}
-            aria-label="Toggle menu"
-          >
-            {isOpen ? <X size={22} /> : <Menu size={22} />}
-          </button>
+          {/* Mobile Actions */}
+          <div className="flex items-center gap-2 md:hidden">
+            {!user && (
+              <Link
+                to="/login"
+                className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-xs font-semibold shadow-sm hover:shadow-md hover:from-indigo-600 hover:to-purple-600 transition-all"
+              >
+                Login
+              </Link>
+            )}
+            <button
+              className="p-2 text-gray-700 hover:bg-gray-100 rounded-lg transition"
+              onClick={() => setIsOpen(!isOpen)}
+              aria-label="Toggle menu"
+            >
+              {isOpen ? <X size={22} /> : <Menu size={22} />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Menu */}
@@ -216,24 +226,14 @@ export default function Navbar() {
                   </button>
                 </>
               ) : (
-                <>
-                  <Link
-                    to="/login"
-                    onClick={() => setIsOpen(false)}
-                    className="block px-4 py-2.5 text-center text-sm text-gray-700 font-medium hover:bg-white rounded-xl"
-                  >
-                    Log in
-                  </Link>
-
-                  <Link
-                    to="/signup"
-                    onClick={() => setIsOpen(false)}
-                    className="flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white hover:bg-indigo-700 shadow"
-                  >
-                    <span>Get Started</span>
-                    <span>→</span>
-                  </Link>
-                </>
+                <Link
+                  to="/signup"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-3.5 text-sm font-semibold text-white hover:from-indigo-700 hover:to-purple-700 shadow-md hover:shadow-lg transition-all"
+                >
+                  <span>Get Started</span>
+                  <span>→</span>
+                </Link>
               )}
             </div>
           </div>

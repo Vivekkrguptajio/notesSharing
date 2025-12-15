@@ -7,6 +7,10 @@ export default function ManageUsers() {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     const [filterRole, setFilterRole] = useState("all");
+    const [filterStatus, setFilterStatus] = useState("all");
+    const [filterBranch, setFilterBranch] = useState("all");
+    const [filterSemester, setFilterSemester] = useState("all");
+    const [filterUploader, setFilterUploader] = useState("all");
 
     // Fetch users from API
     useEffect(() => {
@@ -93,16 +97,27 @@ export default function ManageUsers() {
         });
     };
 
+    // Unique Branches and Semesters for Dropdowns (Derived from actual data)
+    const uniqueBranches = [...new Set(users.map(u => u.branch).filter(Boolean))].sort();
+    const uniqueSemesters = [...new Set(users.map(u => u.semester).filter(Boolean))].sort((a, b) => a - b);
+
     // Filter users
     const filteredUsers = users.filter(user => {
         const matchesSearch =
-            user.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            user.registrationNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            user.branch.toLowerCase().includes(searchTerm.toLowerCase());
+            (user.fullName && user.fullName.toLowerCase().includes(searchTerm.toLowerCase())) ||
+            (user.registrationNumber && user.registrationNumber.toLowerCase().includes(searchTerm.toLowerCase())) ||
+            (user.branch && user.branch.toLowerCase().includes(searchTerm.toLowerCase()));
 
         const matchesRole = filterRole === "all" || user.role === filterRole;
+        const matchesStatus = filterStatus === "all" || (filterStatus === "blocked" ? user.isBlocked : !user.isBlocked);
+        const matchesBranch = filterBranch === "all" || user.branch === filterBranch;
+        // Loose comparison for semester to handle string vs number
+        const matchesSemester = filterSemester === "all" || user.semester == filterSemester;
 
-        return matchesSearch && matchesRole;
+        // Handle Uploader logic: explicitly check truthiness
+        const matchesUploader = filterUploader === "all" || (filterUploader === "true" ? !!user.isUploader : !user.isUploader);
+
+        return matchesSearch && matchesRole && matchesStatus && matchesBranch && matchesSemester && matchesUploader;
     });
 
     return (
@@ -180,13 +195,13 @@ export default function ManageUsers() {
 
                 {/* Filters */}
                 <div className="bg-white rounded-lg shadow p-3 md:p-4 mb-4 md:mb-6">
-                    <div className="grid grid-cols-1 gap-3">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                         {/* Search */}
-                        <div className="relative">
+                        <div className="relative md:col-span-2 lg:col-span-1">
                             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                             <input
                                 type="text"
-                                placeholder="Search by name, reg no, or branch..."
+                                placeholder="Search by name, reg no..."
                                 className="w-full pl-10 pr-4 py-2.5 md:py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -194,18 +209,62 @@ export default function ManageUsers() {
                         </div>
 
                         {/* Role Filter */}
-                        <div>
-                            <select
-                                className="w-full px-4 py-2.5 md:py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                                value={filterRole}
-                                onChange={(e) => setFilterRole(e.target.value)}
-                            >
-                                <option value="all">All Roles</option>
-                                <option value="student">Students</option>
-                                <option value="teacher">Teachers</option>
-                                <option value="admin">Admins</option>
-                            </select>
-                        </div>
+                        <select
+                            className="w-full px-4 py-2.5 md:py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                            value={filterRole}
+                            onChange={(e) => setFilterRole(e.target.value)}
+                        >
+                            <option value="all">All Roles</option>
+                            <option value="student">Students</option>
+                            <option value="teacher">Teachers</option>
+                            <option value="admin">Admins</option>
+                        </select>
+
+                        {/* Status Filter */}
+                        <select
+                            className="w-full px-4 py-2.5 md:py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                            value={filterStatus}
+                            onChange={(e) => setFilterStatus(e.target.value)}
+                        >
+                            <option value="all">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="blocked">Blocked</option>
+                        </select>
+
+                        {/* Branch Filter */}
+                        <select
+                            className="w-full px-4 py-2.5 md:py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                            value={filterBranch}
+                            onChange={(e) => setFilterBranch(e.target.value)}
+                        >
+                            <option value="all">All Branches</option>
+                            {uniqueBranches.map(branch => (
+                                <option key={branch} value={branch}>{branch}</option>
+                            ))}
+                        </select>
+
+                        {/* Semester Filter */}
+                        <select
+                            className="w-full px-4 py-2.5 md:py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                            value={filterSemester}
+                            onChange={(e) => setFilterSemester(e.target.value)}
+                        >
+                            <option value="all">All Semesters</option>
+                            {uniqueSemesters.map(sem => (
+                                <option key={sem} value={sem}>Semester {sem}</option>
+                            ))}
+                        </select>
+
+                        {/* Uploader Filter */}
+                        <select
+                            className="w-full px-4 py-2.5 md:py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                            value={filterUploader}
+                            onChange={(e) => setFilterUploader(e.target.value)}
+                        >
+                            <option value="all">Any Account Type</option>
+                            <option value="true">Uploaders</option>
+                            <option value="false">Regular Users</option>
+                        </select>
                     </div>
                 </div>
 

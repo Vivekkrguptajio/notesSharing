@@ -202,6 +202,34 @@ router.get("/public-stats", async (req, res) => {
     }
 });
 
+// Get Top 3 Uploaders
+router.get("/top-uploaders", async (req, res) => {
+    try {
+        const uploaders = await User.find({ isUploader: true }).select('fullName _id');
+
+        const uploadersWithCounts = await Promise.all(uploaders.map(async (user) => {
+            const notes = await Note.countDocuments({ uploadedBy: user._id });
+            const books = await Book.countDocuments({ uploadedBy: user._id });
+            const pyqs = await PYQ.countDocuments({ uploadedBy: user._id });
+
+            return {
+                id: user._id,
+                fullName: user.fullName,
+                totalUploads: notes + books + pyqs
+            };
+        }));
+
+        const top3 = uploadersWithCounts
+            .sort((a, b) => b.totalUploads - a.totalUploads)
+            .slice(0, 3);
+
+        res.json({ success: true, topUploaders: top3 });
+    } catch (error) {
+        console.error("Error fetching top uploaders:", error);
+        res.status(500).json({ success: false, message: "Server Error" });
+    }
+});
+
 // Get all Notes
 router.get("/notes", async (req, res) => {
     try {

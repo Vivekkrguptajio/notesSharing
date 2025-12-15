@@ -98,7 +98,8 @@ export default function AdminFeedbackSection() {
                 <span className="text-sm text-gray-500">{feedbacks.length} total</span>
             </div>
 
-            <div className="overflow-x-auto">
+            {/* Desktop View (Table) */}
+            <div className="hidden md:block overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                     <thead>
                         <tr className="bg-gray-50 text-gray-600 text-sm">
@@ -127,7 +128,6 @@ export default function AdminFeedbackSection() {
                                             </div>
                                             <div>
                                                 <p className="font-medium text-gray-900 text-sm">{fb.userName}</p>
-                                                {/* <p className="text-xs text-gray-500">ID: ...{fb.userId.slice(-4)}</p> */}
                                             </div>
                                         </div>
                                     </td>
@@ -140,7 +140,6 @@ export default function AdminFeedbackSection() {
                                     <td className="p-4 group relative max-w-xs">
                                         <p className="font-medium text-gray-900 text-sm truncate">{fb.subject}</p>
                                         <p className="text-xs text-gray-500 truncate">{fb.message}</p>
-                                        {/* Tooltip for full message on hover could be added here */}
                                     </td>
                                     <td className="p-4 text-sm text-gray-500">
                                         {new Date(fb.createdAt).toLocaleDateString()}
@@ -184,6 +183,73 @@ export default function AdminFeedbackSection() {
                         )}
                     </tbody>
                 </table>
+            </div>
+
+            {/* Mobile View (Cards) */}
+            <div className="md:hidden p-4 space-y-4">
+                {feedbacks.length === 0 ? (
+                    <div className="text-center py-8 text-gray-500">
+                        No feedback received yet.
+                    </div>
+                ) : (
+                    feedbacks.map((fb) => (
+                        <div key={fb._id} className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                            {/* Header: User & Date */}
+                            <div className="flex justify-between items-start mb-3">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-xs">
+                                        {fb.userName?.charAt(0) || "U"}
+                                    </div>
+                                    <div>
+                                        <p className="font-medium text-gray-900 text-sm">{fb.userName}</p>
+                                        <p className="text-xs text-gray-500">{new Date(fb.createdAt).toLocaleDateString()}</p>
+                                    </div>
+                                </div>
+                                <span className={`px-2 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(fb.status)}`}>
+                                    {fb.status}
+                                </span>
+                            </div>
+
+                            {/* Content */}
+                            <div className="mb-4 space-y-1">
+                                <div className="flex items-center gap-1.5 text-sm mb-1">
+                                    {getTypeIcon(fb.type)}
+                                    <span className="font-medium text-gray-700">{fb.type}</span>
+                                </div>
+                                <h4 className="font-semibold text-gray-900 text-sm">{fb.subject}</h4>
+                                <p className="text-sm text-gray-600 bg-white p-3 rounded-lg border border-gray-100">
+                                    {fb.message}
+                                </p>
+                            </div>
+
+                            {/* Actions */}
+                            <div className="flex justify-end gap-3 pt-2 border-t border-gray-200">
+                                {fb.status !== "Resolved" && (
+                                    <button
+                                        onClick={() => updateStatus(fb._id, "Resolved")}
+                                        className="flex items-center gap-1 text-xs font-medium text-green-600 bg-green-50 px-3 py-1.5 rounded-lg border border-green-100"
+                                    >
+                                        <CheckCircle className="w-3.5 h-3.5" /> Mark Resolved
+                                    </button>
+                                )}
+                                {fb.status === "Pending" && (
+                                    <button
+                                        onClick={() => updateStatus(fb._id, "Reviewed")}
+                                        className="flex items-center gap-1 text-xs font-medium text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-100"
+                                    >
+                                        <Check className="w-3.5 h-3.5" /> Mark Reviewed
+                                    </button>
+                                )}
+                                <button
+                                    onClick={() => deleteFeedback(fb._id)}
+                                    className="p-1.5 bg-red-50 text-red-500 rounded-lg border border-red-100"
+                                >
+                                    <Trash2 className="w-4 h-4" />
+                                </button>
+                            </div>
+                        </div>
+                    ))
+                )}
             </div>
         </div>
     );

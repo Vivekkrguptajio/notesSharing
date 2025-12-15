@@ -46,9 +46,14 @@ router.post("/", verifyToken, async (req, res) => {
 // Get All Feedback (Admin only)
 router.get("/all", verifyToken, async (req, res) => {
     try {
-        const user = await User.findById(req.user.id);
-        if (!user || user.role !== "admin") {
-            return res.status(403).json({ message: "Access denied. Admin only." });
+        // Check for admin (Handle hardcoded admin with ID "admin")
+        if (req.user.id === "admin") {
+            if (req.user.role !== "admin") return res.status(403).json({ message: "Access denied. Admin only." });
+        } else {
+            const user = await User.findById(req.user.id);
+            if (!user || user.role !== "admin") {
+                return res.status(403).json({ message: "Access denied. Admin only." });
+            }
         }
 
         const feedbacks = await Feedback.find().sort({ createdAt: -1 });
@@ -62,9 +67,14 @@ router.get("/all", verifyToken, async (req, res) => {
 // Update Feedback Status (Admin only)
 router.patch("/:id/status", verifyToken, async (req, res) => {
     try {
-        const user = await User.findById(req.user.id);
-        if (!user || user.role !== "admin") {
-            return res.status(403).json({ message: "Access denied. Admin only." });
+        // Check for admin (Handle hardcoded admin with ID "admin")
+        if (req.user.id === "admin") {
+            if (req.user.role !== "admin") return res.status(403).json({ message: "Access denied. Admin only." });
+        } else {
+            const user = await User.findById(req.user.id);
+            if (!user || user.role !== "admin") {
+                return res.status(403).json({ message: "Access denied. Admin only." });
+            }
         }
 
         const { status } = req.body;
@@ -90,9 +100,14 @@ router.patch("/:id/status", verifyToken, async (req, res) => {
 // Delete Feedback (Admin only)
 router.delete("/:id", verifyToken, async (req, res) => {
     try {
-        const user = await User.findById(req.user.id);
-        if (!user || user.role !== "admin") {
-            return res.status(403).json({ message: "Access denied. Admin only." });
+        // Check for admin (Handle hardcoded admin with ID "admin")
+        if (req.user.id === "admin") {
+            if (req.user.role !== "admin") return res.status(403).json({ message: "Access denied. Admin only." });
+        } else {
+            const user = await User.findById(req.user.id);
+            if (!user || user.role !== "admin") {
+                return res.status(403).json({ message: "Access denied. Admin only." });
+            }
         }
 
         await Feedback.findByIdAndDelete(req.params.id);
