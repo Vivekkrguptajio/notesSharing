@@ -6,6 +6,7 @@ import UploaderRequestForm from "../../components/UploaderRequestForm";
 import MyUploadsSection from "../../components/MyUploadsSection";
 import MyDownloadsSection from "../../components/MyDownloadsSection";
 import StudentFeedbackSection from "../../components/StudentFeedbackSection";
+import Footer from "../../components/common/Footer";
 
 export default function StudentDashboard() {
     const navigate = useNavigate();
@@ -211,7 +212,31 @@ export default function StudentDashboard() {
                     </div>
                 </div>
 
-
+                {/* Uploader Guidelines Card - Only for Uploaders */}
+                {user?.isUploader && (
+                    <div className="mb-8">
+                        <div className="bg-gradient-to-r from-red-50 to-orange-50 border-2 border-red-200 rounded-xl p-5 sm:p-6">
+                            <div className="flex items-start gap-4">
+                                <div className="bg-red-100 p-3 rounded-lg flex-shrink-0">
+                                    <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                    </svg>
+                                </div>
+                                <div className="flex-1">
+                                    <h3 className="text-lg font-bold text-red-900 mb-2 flex items-center gap-2">
+                                        ⚠️ Important Guidelines for Uploaders
+                                    </h3>
+                                    <p className="text-sm sm:text-base text-red-800 leading-relaxed">
+                                        If you upload anything that is <strong>not related to PYQs, books, or notes</strong>, a complaint will be submitted to the college administration. So please be respectful and follow the guidelines.
+                                    </p>
+                                    <div className="mt-3 text-xs sm:text-sm text-red-700 bg-red-100 rounded-lg p-3">
+                                        <strong>Remember:</strong> Only upload academic materials (Notes, Books, PYQs). Inappropriate content will result in immediate action.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* Info Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -291,6 +316,9 @@ export default function StudentDashboard() {
                     userFullName={user?.fullName}
                 />
             )}
+
+            {/* Footer */}
+            <Footer />
         </div>
     );
 }

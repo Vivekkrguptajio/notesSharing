@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Upload, FileText, Users, TrendingUp, Award, BookOpen, Star, MessageSquare } from "lucide-react";
+import Footer from "../../components/common/Footer";
 
 export default function TeacherDashboard() {
     const stats = [
@@ -150,6 +151,9 @@ export default function TeacherDashboard() {
                     </div>
                 </div>
             </div>
+
+            {/* Footer */}
+            <Footer />
         </div>
     );
 }

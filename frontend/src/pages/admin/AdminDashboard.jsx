@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Users, FileText, BookOpen, FileQuestion, Settings, LogOut, UserCheck, Loader, MessageSquare } from "lucide-react";
 import { logout } from "../../api/auth.api";
 import AdminFeedbackSection from "../../components/AdminFeedbackSection";
+import Footer from "../../components/common/Footer";
 
 export default function AdminDashboard() {
     const navigate = useNavigate();
@@ -113,6 +114,9 @@ export default function AdminDashboard() {
                     </div>
                 </div>
             </div>
+
+            {/* Footer */}
+            <Footer />
         </div>
     );
 }
