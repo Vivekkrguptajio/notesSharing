@@ -441,9 +441,8 @@ export default function MyUploadsSection({ userId, onCountsUpdate }) {
                                     >
                                         <option value="">Select Branch</option>
                                         <option value="CSE">CSE</option>
-                                        <option value="ECE">ECE</option>
-                                        <option value="ME">ME</option>
                                         <option value="CE">CE</option>
+                                        <option value="ME">ME</option>
                                         <option value="EE">EE</option>
                                     </select>
                                 </div>

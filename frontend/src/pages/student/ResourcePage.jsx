@@ -146,9 +146,8 @@ export default function ResourcePage({ type, title }) {
                             >
                                 <option value="">All Branches</option>
                                 <option value="CSE">CSE</option>
-                                <option value="ECE">ECE</option>
-                                <option value="ME">ME</option>
                                 <option value="CE">CE</option>
+                                <option value="ME">ME</option>
                                 <option value="EE">EE</option>
                             </select>
                             <Filter className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />

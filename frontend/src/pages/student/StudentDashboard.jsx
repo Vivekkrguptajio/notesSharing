@@ -7,6 +7,9 @@ import MyUploadsSection from "../../components/MyUploadsSection";
 import MyDownloadsSection from "../../components/MyDownloadsSection";
 import StudentFeedbackSection from "../../components/StudentFeedbackSection";
 import Footer from "../../components/common/Footer";
+import NoteRequestForm from "../../components/NoteRequestForm";
+import MyNoteRequests from "../../components/MyNoteRequests";
+import UploaderNoteRequests from "../../components/UploaderNoteRequests";
 
 export default function StudentDashboard() {
     const navigate = useNavigate();
@@ -16,6 +19,7 @@ export default function StudentDashboard() {
     const [loadingRequest, setLoadingRequest] = useState(true);
     const [uploadCounts, setUploadCounts] = useState({ total: 0 });
     const [downloadCounts, setDownloadCounts] = useState({ total: 0 });
+    const [showNoteRequestForm, setShowNoteRequestForm] = useState(false);
 
     useEffect(() => {
         const currentUser = getCurrentUser();
@@ -279,6 +283,29 @@ export default function StudentDashboard() {
                     </div>
                 </div>
 
+                {/* Request Notes Button - For all students */}
+                <div className="mt-6">
+                    <button
+                        onClick={() => setShowNoteRequestForm(true)}
+                        className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all font-medium shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+                    >
+                        <FileText size={20} />
+                        Request Notes
+                    </button>
+                </div>
+
+                {/* My Note Requests - For all students */}
+                <div className="mt-6">
+                    <MyNoteRequests userId={user?.id} />
+                </div>
+
+                {/* Uploader Note Requests - Only for Uploaders */}
+                {user?.isUploader && (
+                    <div className="mt-6">
+                        <UploaderNoteRequests />
+                    </div>
+                )}
+
                 {/* My Uploads Section - Only for Uploaders */}
                 {user?.isUploader && (
                     <div className="mt-6">
@@ -314,6 +341,17 @@ export default function StudentDashboard() {
                     }}
                     userId={user?.id}
                     userFullName={user?.fullName}
+                />
+            )}
+
+            {/* Note Request Form Modal */}
+            {showNoteRequestForm && (
+                <NoteRequestForm
+                    onClose={() => setShowNoteRequestForm(false)}
+                    onSuccess={() => {
+                        // Optionally refresh the requests list
+                        setShowNoteRequestForm(false);
+                    }}
                 />
             )}
 

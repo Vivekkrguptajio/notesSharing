@@ -140,9 +140,10 @@ export default function ProfilePage() {
                                                 className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 appearance-none bg-white"
                                             >
                                                 <option value="">Select Branch</option>
-                                                {["Computer Science", "Electronics", "Mechanical", "Civil", "Electrical"].map((branch) => (
-                                                    <option key={branch} value={branch}>{branch}</option>
-                                                ))}
+                                                <option value="CSE">CSE</option>
+                                                <option value="CE">CE</option>
+                                                <option value="ME">ME</option>
+                                                <option value="EE">EE</option>
                                             </select>
                                             <Building size={16} className="absolute left-3 top-3 text-gray-400" />
                                             <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">

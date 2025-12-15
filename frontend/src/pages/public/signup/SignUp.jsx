@@ -17,7 +17,7 @@ export default function SignUpPage() {
         password: "",
     });
 
-    const branches = ["Computer Science", "Electronics", "Mechanical", "Civil", "Electrical"];
+    const branches = ["CSE", "CE", "ME", "EE"];
     const semesters = ["Semester 1", "Semester 2", "Semester 3", "Semester 4", "Semester 5", "Semester 6", "Semester 7", "Semester 8"];
 
     const handleChange = (e) => {
