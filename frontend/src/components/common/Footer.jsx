@@ -154,6 +154,17 @@ export default function Footer() {
             <p className="text-center text-xs sm:text-sm text-gray-600">
               © {new Date().getFullYear()} CampusNotes. All rights reserved.
             </p>
+            <p className="text-center text-xs sm:text-sm text-gray-600 mt-2">
+              Made with ❤️ by{' '}
+              <a
+                href="https://instagram.com/kumarvivek.ai"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-indigo-600 hover:text-indigo-700 font-medium hover:underline transition-colors"
+              >
+                Vivek Kumar Gupta
+              </a>
+            </p>
           </div>
         </div>
       </footer>

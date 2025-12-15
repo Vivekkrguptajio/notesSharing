@@ -9,6 +9,12 @@ export default function MyUploadsSection({ userId, onCountsUpdate }) {
     const [editForm, setEditForm] = useState({});
     const [searchQuery, setSearchQuery] = useState("");
 
+    // Filter states
+    const [filterType, setFilterType] = useState("all");
+    const [filterSubject, setFilterSubject] = useState("all");
+    const [filterFileType, setFilterFileType] = useState("all");
+    const [filterDateRange, setFilterDateRange] = useState("all");
+
     // Fallback to localhost:5000 if env is missing
     const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -204,8 +210,9 @@ export default function MyUploadsSection({ userId, onCountsUpdate }) {
                     </div>
                 </div>
 
-                {/* Search Box */}
-                <div className="mb-4">
+                {/* Filter Bar */}
+                <div className="mb-4 space-y-3">
+                    {/* Search */}
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                         <input
@@ -213,8 +220,61 @@ export default function MyUploadsSection({ userId, onCountsUpdate }) {
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             placeholder="Search by title, subject, or author..."
-                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                         />
+                    </div>
+
+                    {/* Filters Grid */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                        {/* Resource Type */}
+                        <select
+                            value={filterType}
+                            onChange={(e) => setFilterType(e.target.value)}
+                            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                        >
+                            <option value="all">All Types</option>
+                            <option value="note">Notes</option>
+                            <option value="book">Books</option>
+                            <option value="pyq">PYQs</option>
+                        </select>
+
+                        {/* Subject */}
+                        <select
+                            value={filterSubject}
+                            onChange={(e) => setFilterSubject(e.target.value)}
+                            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                        >
+                            <option value="all">All Subjects</option>
+                            {[...new Set([...uploads.notes, ...uploads.books, ...uploads.pyqs].map(item => item.subject))].sort().map(subject => (
+                                <option key={subject} value={subject}>{subject}</option>
+                            ))}
+                        </select>
+
+                        {/* File Type */}
+                        <select
+                            value={filterFileType}
+                            onChange={(e) => setFilterFileType(e.target.value)}
+                            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                        >
+                            <option value="all">All Files</option>
+                            <option value="PDF">PDF</option>
+                            <option value="DOC">DOC</option>
+                            <option value="DOCX">DOCX</option>
+                            <option value="PPT">PPT</option>
+                            <option value="PPTX">PPTX</option>
+                        </select>
+
+                        {/* Date Range */}
+                        <select
+                            value={filterDateRange}
+                            onChange={(e) => setFilterDateRange(e.target.value)}
+                            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                        >
+                            <option value="all">All Time</option>
+                            <option value="7">Last 7 Days</option>
+                            <option value="30">Last 30 Days</option>
+                            <option value="90">Last 90 Days</option>
+                        </select>
                     </div>
                 </div>
 
@@ -222,24 +282,46 @@ export default function MyUploadsSection({ userId, onCountsUpdate }) {
                 {counts.total === 0 ? (
                     <p className="text-center text-gray-500 py-8">No uploads yet. Start sharing your materials!</p>
                 ) : (() => {
-                    // Filter uploads based on search query
-                    const filterItems = (items) => {
-                        if (!searchQuery.trim()) return items;
-                        const query = searchQuery.toLowerCase();
-                        return items.filter(item =>
-                            item.title?.toLowerCase().includes(query) ||
-                            item.subject?.toLowerCase().includes(query) ||
-                            item.author?.toLowerCase().includes(query)
-                        );
+                    // Comprehensive filter function
+                    const filterItems = (items, type) => {
+                        return items.filter(item => {
+                            // Search filter
+                            const query = searchQuery.toLowerCase();
+                            const matchesSearch = !searchQuery.trim() ||
+                                item.title?.toLowerCase().includes(query) ||
+                                item.subject?.toLowerCase().includes(query) ||
+                                item.author?.toLowerCase().includes(query);
+
+                            // Type filter
+                            const matchesType = filterType === "all" || type === filterType;
+
+                            // Subject filter
+                            const matchesSubject = filterSubject === "all" || item.subject === filterSubject;
+
+                            // File type filter
+                            const matchesFileType = filterFileType === "all" || item.fileType === filterFileType;
+
+                            // Date range filter
+                            let matchesDate = true;
+                            if (filterDateRange !== "all") {
+                                const itemDate = new Date(item.createdAt);
+                                const daysAgo = parseInt(filterDateRange);
+                                const cutoffDate = new Date();
+                                cutoffDate.setDate(cutoffDate.getDate() - daysAgo);
+                                matchesDate = itemDate >= cutoffDate;
+                            }
+
+                            return matchesSearch && matchesType && matchesSubject && matchesFileType && matchesDate;
+                        });
                     };
 
-                    const filteredNotes = filterItems(uploads.notes);
-                    const filteredBooks = filterItems(uploads.books);
-                    const filteredPyqs = filterItems(uploads.pyqs);
+                    const filteredNotes = filterItems(uploads.notes, "note");
+                    const filteredBooks = filterItems(uploads.books, "book");
+                    const filteredPyqs = filterItems(uploads.pyqs, "pyq");
                     const hasResults = filteredNotes.length > 0 || filteredBooks.length > 0 || filteredPyqs.length > 0;
 
                     if (!hasResults) {
-                        return <p className="text-center text-gray-500 py-8">No results found for "{searchQuery}"</p>;
+                        return <p className="text-center text-gray-500 py-8">No results found matching your filters</p>;
                     }
 
                     return (

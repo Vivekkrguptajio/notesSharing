@@ -3,6 +3,7 @@ import Note from "../models/Note.model.js";
 import Book from "../models/Book.model.js";
 import PYQ from "../models/PYQ.model.js";
 import User from "../models/User.model.js";
+import Download from "../models/Download.model.js";
 
 const router = express.Router();
 
@@ -413,6 +414,9 @@ router.delete("/note/:id", async (req, res) => {
             });
         }
 
+        // Delete all download history records for this note
+        await Download.deleteMany({ itemId: id, itemType: "Note" });
+
         res.json({
             success: true,
             message: "Note deleted successfully"
@@ -440,6 +444,9 @@ router.delete("/book/:id", async (req, res) => {
             });
         }
 
+        // Delete all download history records for this book
+        await Download.deleteMany({ itemId: id, itemType: "Book" });
+
         res.json({
             success: true,
             message: "Book deleted successfully"
@@ -466,6 +473,9 @@ router.delete("/pyq/:id", async (req, res) => {
                 message: "PYQ not found"
             });
         }
+
+        // Delete all download history records for this PYQ
+        await Download.deleteMany({ itemId: id, itemType: "PYQ" });
 
         res.json({
             success: true,

@@ -8,6 +8,12 @@ export default function ManageResources({ resourceType, title }) {
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
 
+    // Filter states
+    const [filterSubject, setFilterSubject] = useState("all");
+    const [filterFileType, setFilterFileType] = useState("all");
+    const [filterDateRange, setFilterDateRange] = useState("all");
+    const [filterUploader, setFilterUploader] = useState("all");
+
     // Helper to pluralize resource type for API endpoints (e.g., 'note' -> 'notes')
     const endpointSuffix = resourceType + "s";
 
@@ -53,11 +59,36 @@ export default function ManageResources({ resourceType, title }) {
         }
     };
 
-    const filteredItems = items.filter(item =>
-        item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.subject?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.uploaderName?.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    // Comprehensive filter function
+    const filteredItems = items.filter(item => {
+        // Search filter
+        const query = searchQuery.toLowerCase();
+        const matchesSearch = !searchQuery.trim() ||
+            item.title?.toLowerCase().includes(query) ||
+            item.subject?.toLowerCase().includes(query) ||
+            item.uploaderName?.toLowerCase().includes(query);
+
+        // Subject filter
+        const matchesSubject = filterSubject === "all" || item.subject === filterSubject;
+
+        // File type filter
+        const matchesFileType = filterFileType === "all" || item.fileType === filterFileType;
+
+        // Uploader filter
+        const matchesUploader = filterUploader === "all" || item.uploaderName === filterUploader;
+
+        // Date range filter
+        let matchesDate = true;
+        if (filterDateRange !== "all") {
+            const itemDate = new Date(item.createdAt);
+            const daysAgo = parseInt(filterDateRange);
+            const cutoffDate = new Date();
+            cutoffDate.setDate(cutoffDate.getDate() - daysAgo);
+            matchesDate = itemDate >= cutoffDate;
+        }
+
+        return matchesSearch && matchesSubject && matchesFileType && matchesUploader && matchesDate;
+    });
 
     return (
         <div className="min-h-screen bg-gray-50 p-6">
@@ -75,8 +106,9 @@ export default function ManageResources({ resourceType, title }) {
                     </div>
                 </div>
 
-                {/* Search Bar */}
-                <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200 mb-6">
+                {/* Filter Bar */}
+                <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200 mb-6 space-y-3">
+                    {/* Search */}
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
                         <input
@@ -84,8 +116,61 @@ export default function ManageResources({ resourceType, title }) {
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             placeholder="Search by title, subject, or uploader..."
-                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                         />
+                    </div>
+
+                    {/* Filters Grid */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                        {/* Subject */}
+                        <select
+                            value={filterSubject}
+                            onChange={(e) => setFilterSubject(e.target.value)}
+                            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                        >
+                            <option value="all">All Subjects</option>
+                            {[...new Set(items.map(item => item.subject))].filter(Boolean).sort().map(subject => (
+                                <option key={subject} value={subject}>{subject}</option>
+                            ))}
+                        </select>
+
+                        {/* File Type */}
+                        <select
+                            value={filterFileType}
+                            onChange={(e) => setFilterFileType(e.target.value)}
+                            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                        >
+                            <option value="all">All Files</option>
+                            <option value="PDF">PDF</option>
+                            <option value="DOC">DOC</option>
+                            <option value="DOCX">DOCX</option>
+                            <option value="PPT">PPT</option>
+                            <option value="PPTX">PPTX</option>
+                        </select>
+
+                        {/* Uploader */}
+                        <select
+                            value={filterUploader}
+                            onChange={(e) => setFilterUploader(e.target.value)}
+                            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                        >
+                            <option value="all">All Uploaders</option>
+                            {[...new Set(items.map(item => item.uploaderName))].filter(Boolean).sort().map(uploader => (
+                                <option key={uploader} value={uploader}>{uploader}</option>
+                            ))}
+                        </select>
+
+                        {/* Date Range */}
+                        <select
+                            value={filterDateRange}
+                            onChange={(e) => setFilterDateRange(e.target.value)}
+                            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                        >
+                            <option value="all">All Time</option>
+                            <option value="7">Last 7 Days</option>
+                            <option value="30">Last 30 Days</option>
+                            <option value="90">Last 90 Days</option>
+                        </select>
                     </div>
                 </div>
 
