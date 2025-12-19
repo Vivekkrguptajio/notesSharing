@@ -5,7 +5,38 @@ import PYQ from "../models/PYQ.model.js";
 import User from "../models/User.model.js";
 import Download from "../models/Download.model.js";
 
+import { upload } from "../middlewares/upload.middleware.js";
+
 const router = express.Router();
+
+// Upload Single File (Generic)
+router.post("/file", upload.single("file"), (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({
+                success: false,
+                message: "No file uploaded"
+            });
+        }
+
+        // Return the URL to access the file
+        const fileUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
+
+        res.json({
+            success: true,
+            message: "File uploaded successfully",
+            fileUrl,
+            fileType: req.file.mimetype
+        });
+    } catch (error) {
+        console.error("Error in file upload:", error);
+        res.status(500).json({
+            success: false,
+            message: "File upload failed",
+            error: error.message
+        });
+    }
+});
 
 // Upload Note
 router.post("/note", async (req, res) => {

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Edit2, Trash2, ExternalLink, X, Save, Search, Download } from "lucide-react";
+import DropZone from "./common/DropZone";
 
 export default function MyUploadsSection({ userId, onCountsUpdate }) {
     const [uploads, setUploads] = useState({ notes: [], books: [], pyqs: [] });
@@ -421,12 +422,10 @@ export default function MyUploadsSection({ userId, onCountsUpdate }) {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">File URL</label>
-                                <input
-                                    type="url"
-                                    value={editForm.fileUrl || ""}
-                                    onChange={(e) => setEditForm({ ...editForm, fileUrl: e.target.value })}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                <label className="block text-sm font-medium text-gray-700 mb-2">File</label>
+                                <DropZone
+                                    onFileUploaded={(url) => setEditForm({ ...editForm, fileUrl: url })}
+                                    initialUrl={editForm.fileUrl}
                                 />
                             </div>
 

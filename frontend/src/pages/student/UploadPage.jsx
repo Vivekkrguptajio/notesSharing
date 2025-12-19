@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Upload, FileText, BookOpen, HelpCircle, CheckCircle } from "lucide-react";
+import DropZone from "../../components/common/DropZone";
 import { getCurrentUser } from "../../api/auth.api";
 
 export default function UploadPage() {
@@ -288,16 +289,21 @@ export default function UploadPage() {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">File URL *</label>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">File</label>
+                            <DropZone
+                                onFileUploaded={(url) => setNoteForm({ ...noteForm, fileUrl: url })}
+                                initialUrl={noteForm.fileUrl}
+                            />
+                            {/* Hidden input for validation */}
                             <input
-                                type="url"
+                                type="text"
                                 required
                                 value={noteForm.fileUrl}
-                                onChange={(e) => setNoteForm({ ...noteForm, fileUrl: e.target.value })}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                placeholder="https://drive.google.com/..."
+                                onChange={() => { }}
+                                className="sr-only"
+                                onInvalid={(e) => e.target.setCustomValidity("Please upload a file")}
+                                onInput={(e) => e.target.setCustomValidity("")}
                             />
-                            <p className="text-xs text-gray-500 mt-1">Upload file to Google Drive/Imgur and paste link here</p>
                         </div>
 
                         <div>
@@ -419,16 +425,21 @@ export default function UploadPage() {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">File URL *</label>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">File</label>
+                            <DropZone
+                                onFileUploaded={(url) => setBookForm({ ...bookForm, fileUrl: url })}
+                                initialUrl={bookForm.fileUrl}
+                            />
+                            {/* Hidden input for validation */}
                             <input
-                                type="url"
+                                type="text"
                                 required
                                 value={bookForm.fileUrl}
-                                onChange={(e) => setBookForm({ ...bookForm, fileUrl: e.target.value })}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                placeholder="https://drive.google.com/..."
+                                onChange={() => { }}
+                                className="sr-only"
+                                onInvalid={(e) => e.target.setCustomValidity("Please upload a file")}
+                                onInput={(e) => e.target.setCustomValidity("")}
                             />
-                            <p className="text-xs text-gray-500 mt-1">Upload file to Google Drive and paste link here</p>
                         </div>
 
                         <div>
@@ -566,16 +577,21 @@ export default function UploadPage() {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">File URL *</label>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">File</label>
+                            <DropZone
+                                onFileUploaded={(url) => setPyqForm({ ...pyqForm, fileUrl: url })}
+                                initialUrl={pyqForm.fileUrl}
+                            />
+                            {/* Hidden input for validation */}
                             <input
-                                type="url"
+                                type="text"
                                 required
                                 value={pyqForm.fileUrl}
-                                onChange={(e) => setPyqForm({ ...pyqForm, fileUrl: e.target.value })}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                placeholder="https://drive.google.com/..."
+                                onChange={() => { }}
+                                className="sr-only"
+                                onInvalid={(e) => e.target.setCustomValidity("Please upload a file")}
+                                onInput={(e) => e.target.setCustomValidity("")}
                             />
-                            <p className="text-xs text-gray-500 mt-1">Upload file to Google Drive and paste link here</p>
                         </div>
 
                         <button
