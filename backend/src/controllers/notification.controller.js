@@ -1,4 +1,4 @@
-import { Notification } from "../models/Notification.model.js";
+import Notification from "../models/Notification.model.js";
 
 const createNotification = async (req, res) => {
     try {
@@ -53,4 +53,61 @@ const getNotifications = async (req, res) => {
     }
 };
 
-export { createNotification, getNotifications };
+const deleteNotification = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const notification = await Notification.findByIdAndDelete(id);
+
+        if (!notification) {
+            return res.status(404).json({
+                success: false,
+                message: "Notification not found",
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Notification deleted successfully",
+        });
+    } catch (error) {
+        console.error("Delete Notification Error:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+        });
+    }
+};
+
+const updateNotification = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { title, message, type } = req.body;
+
+        const notification = await Notification.findByIdAndUpdate(
+            id,
+            { title, message, type },
+            { new: true }
+        );
+
+        if (!notification) {
+            return res.status(404).json({
+                success: false,
+                message: "Notification not found",
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Notification updated successfully",
+            data: notification,
+        });
+    } catch (error) {
+        console.error("Update Notification Error:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+        });
+    }
+};
+
+export { createNotification, getNotifications, deleteNotification, updateNotification };

@@ -49,35 +49,39 @@ export default function NotificationBell() {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    // Check for updates on mount (optional, to show red dot)
+    // Check for updates on mount to show red dot
     useEffect(() => {
-        // Could fetch just count or check metadata here.
-        // For simplicity, let's just fetch once on mount to see if there are any recent ones? 
-        // Or just leave it as click-to-view.
-        // Let's implement a simple "New" indicator based on local storage.
         const checkNew = async () => {
             try {
                 const response = await fetch(`${import.meta.env.VITE_API_URL}/api/notifications`);
                 const data = await response.json();
                 if (data.success && data.data.length > 0) {
+                    const latestNotif = data.data[0];
                     const lastRead = localStorage.getItem("lastReadNotificationTime");
-                    const latestTime = new Date(data.data[0].createdAt).getTime();
+
+                    // If no lastRead exists, or if latest notification is newer than lastRead
+                    // We compare timestamps. 
+                    const latestTime = new Date(latestNotif.createdAt).getTime();
+
                     if (!lastRead || latestTime > parseInt(lastRead)) {
                         setHasUnread(true);
                     }
                 }
-            } catch (e) { }
-        }
+            } catch (e) {
+                console.error("Error checking new notifications", e);
+            }
+        };
         checkNew();
     }, []);
 
     const handleOpen = () => {
         toggleMenu();
-        if (hasUnread) {
+        if (hasUnread || !isOpen) {
+            // When opening, we mark as read
             setHasUnread(false);
             localStorage.setItem("lastReadNotificationTime", Date.now().toString());
         }
-    }
+    };
 
     const getTypeIcon = (type) => {
         switch (type) {
@@ -109,7 +113,7 @@ export default function NotificationBell() {
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50 origin-top-right transform transition-all max-h-[80vh] overflow-y-auto">
+                <div className="absolute right-0 mt-2 w-[calc(100vw-2rem)] sm:w-96 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50 origin-top-right transform transition-all max-h-[80vh] overflow-y-auto mr-[-1rem] sm:mr-0">
                     <div className="px-4 py-2 border-b border-gray-100 flex justify-between items-center bg-gray-50/50 sticky top-0 backdrop-blur-sm">
                         <h3 className="font-semibold text-gray-800">Notifications</h3>
                         <button onClick={() => setIsOpen(false)} className="text-gray-400 hover:text-gray-600">

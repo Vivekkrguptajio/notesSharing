@@ -18,12 +18,11 @@ const notificationSchema = new mongoose.Schema(
             default: "info",
         },
         createdBy: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
+            type: String, // Changed from ObjectId to allow "admin" string ID
             required: true,
         },
     },
     { timestamps: true }
 );
 
-export const Notification = mongoose.model("Notification", notificationSchema);
+export default mongoose.model("Notification", notificationSchema);

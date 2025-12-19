@@ -3,6 +3,8 @@ import { verifyJWT, verifyAdmin } from "../middleware/auth.middleware.js";
 import {
     createNotification,
     getNotifications,
+    deleteNotification,
+    updateNotification,
 } from "../controllers/notification.controller.js";
 
 const router = Router();
@@ -18,5 +20,10 @@ const router = Router();
 
 router.route("/").get(getNotifications);
 router.route("/").post(verifyJWT, verifyAdmin, createNotification);
+
+router
+    .route("/:id")
+    .delete(verifyJWT, verifyAdmin, deleteNotification)
+    .put(verifyJWT, verifyAdmin, updateNotification);
 
 export default router;
