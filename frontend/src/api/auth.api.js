@@ -95,3 +95,12 @@ export const getCurrentUser = () => {
 export const isAuthenticated = () => {
     return !!localStorage.getItem("token");
 };
+
+/**
+ * Get Auth Headers
+ * @returns {Object} Headers object with Authorization token
+ */
+export const getAuthHeaders = () => {
+    const token = localStorage.getItem("token");
+    return token ? { Authorization: `Bearer ${token}` } : {};
+};

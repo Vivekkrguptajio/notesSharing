@@ -7,6 +7,7 @@ import uploadRoutes from "./routes/upload.routes.js"; // Upload routes
 import downloadRoutes from "./routes/download.routes.js"; // Download routes
 import feedbackRoutes from "./routes/feedback.routes.js"; // Feedback routes
 import noteRequestRoutes from "./routes/noteRequest.routes.js"; // Note Request routes
+import notificationRoutes from "./routes/notification.routes.js"; // Notification routes
 
 const app = express();
 
@@ -53,6 +54,9 @@ app.use("/api/feedback", feedbackRoutes);
 
 // 🔥 NOTE REQUEST ROUTES
 app.use("/api/note-requests", noteRequestRoutes);
+
+// 🔥 NOTIFICATION ROUTES
+app.use("/api/notifications", notificationRoutes);
 
 // ======================
 // GLOBAL ERROR HANDLER

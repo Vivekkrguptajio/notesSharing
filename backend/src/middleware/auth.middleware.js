@@ -55,3 +55,21 @@ export const protect = async (req, res, next) => {
         });
     }
 };
+
+/* =======================
+   ADMIN MIDDLEWARE
+   Verifies if user is admin
+======================= */
+export const verifyAdmin = (req, res, next) => {
+    if (req.user && req.user.role === "admin") {
+        next();
+    } else {
+        res.status(403).json({
+            success: false,
+            message: "Access denied. Admin resources only.",
+        });
+    }
+};
+
+// Alias for compatibility
+export const verifyJWT = protect;

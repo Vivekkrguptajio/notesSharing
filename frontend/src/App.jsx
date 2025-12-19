@@ -14,6 +14,7 @@ import ManageUploaderRequests from "./pages/admin/ManageUploaderRequests";
 import ManageResources from "./pages/admin/ManageResources";
 import TeacherDashboard from "./pages/teacher/TeacherDashboard";
 import ProfilePage from "./pages/student/ProfilePage";
+import ManageNotifications from "./pages/admin/ManageNotifications";
 
 import Navbar from "./components/common/Navbar";
 
@@ -38,6 +39,7 @@ function App() {
         <Route path="/admin/books" element={<ManageResources resourceType="book" title="Manage Books" />} />
         <Route path="/admin/pyqs" element={<ManageResources resourceType="pyq" title="Manage PYQs" />} />
         <Route path="/admin/uploader-requests" element={<ManageUploaderRequests />} />
+        <Route path="/admin/notifications" element={<ManageNotifications />} />
         <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
       </Routes>
     </>

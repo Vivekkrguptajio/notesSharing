@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Users, FileText, BookOpen, FileQuestion, Settings, LogOut, UserCheck, Loader, MessageSquare } from "lucide-react";
+import { Users, FileText, BookOpen, FileQuestion, Settings, LogOut, UserCheck, Loader, MessageSquare, Bell } from "lucide-react";
 import { logout } from "../../api/auth.api";
 import AdminFeedbackSection from "../../components/AdminFeedbackSection";
 import Footer from "../../components/common/Footer";
@@ -51,6 +51,7 @@ export default function AdminDashboard() {
         { icon: BookOpen, label: "Manage Books", to: "/admin/books" },
         { icon: FileQuestion, label: "Manage PYQs", to: "/admin/pyqs" },
         { icon: UserCheck, label: "Uploader Requests", to: "/admin/uploader-requests" },
+        { icon: Bell, label: "Notifications", to: "/admin/notifications" },
         { icon: Settings, label: "Settings", to: "/admin/settings" },
     ];
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Menu, X, User, LogOut, LayoutDashboard, ChevronDown } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { getCurrentUser, logout } from "../../api/auth.api";
+import NotificationBell from "./NotificationBell";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -74,6 +75,7 @@ export default function Navbar() {
 
           {/* Right Side Actions */}
           <div className="hidden md:flex items-center gap-3 lg:gap-4">
+            <NotificationBell />
             {user ? (
               <div className="relative">
                 <button
@@ -144,6 +146,7 @@ export default function Navbar() {
 
           {/* Mobile Actions */}
           <div className="flex items-center gap-2 md:hidden">
+            <NotificationBell />
             {!user && (
               <Link
                 to="/login"
