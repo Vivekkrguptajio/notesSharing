@@ -19,7 +19,22 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://localhost:3000"], // Add frontend URLs
+    origin: (origin, callback) => {
+      const allowedOrigins = [
+        "http://localhost:5173",
+        "http://localhost:3000",
+        process.env.FRONTEND_URL, // Add your Render Frontend URL here in .env
+        "https://notes-sharing-frontend.onrender.com", // Example common pattern
+        "https://notessharing-frontend.onrender.com"
+      ].filter(Boolean);
+
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        console.log("CORS blocked origin:", origin);
+        callback(null, false);
+      }
+    },
     credentials: true,
   })
 );
