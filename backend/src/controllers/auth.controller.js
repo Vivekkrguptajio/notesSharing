@@ -102,10 +102,7 @@ export const login = async (req, res) => {
     const adminRegNumber = process.env.ADMIN_REG_NUMBER;
     const adminPassword = process.env.ADMIN_PASSWORD;
 
-    // Debug log
-    console.log('🔍 Login attempt:', { registrationNumber, password });
-    console.log('🔑 Admin credentials from .env:', { adminRegNumber, adminPassword });
-    console.log('✅ Match?', registrationNumber === adminRegNumber && password === adminPassword);
+
 
     if (registrationNumber === adminRegNumber && password === adminPassword) {
       // Admin login - create admin user object
