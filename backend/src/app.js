@@ -23,9 +23,10 @@ app.use(
       const allowedOrigins = [
         "http://localhost:5173",
         "http://localhost:3000",
-        process.env.FRONTEND_URL, // Add your Render Frontend URL here in .env
-        "https://notes-sharing-frontend.onrender.com", // Example common pattern
-        "https://notessharing-frontend.onrender.com"
+        process.env.FRONTEND_URL,
+        "https://notes-sharing-frontend.onrender.com",
+        "https://notessharing-frontend.onrender.com",
+        "https://notessharing-1.onrender.com" // Added specific blocked origin
       ].filter(Boolean);
 
       if (!origin || allowedOrigins.includes(origin)) {
