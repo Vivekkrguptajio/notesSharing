@@ -243,9 +243,16 @@ router.get("/student-resources", async (req, res) => {
             return res.status(400).json({ success: false, message: "Branch and Semester are required" });
         }
 
-        const notes = await Note.find({ branch, semester }).sort({ createdAt: -1 });
-        const books = await Book.find({ branch, semester }).sort({ createdAt: -1 });
-        const pyqs = await PYQ.find({ branch, semester }).sort({ createdAt: -1 });
+        // Parse semester to number (handle "Semester 7" or just "7")
+        const semesterNum = parseInt(semester.toString().replace(/\D/g, ''));
+
+        if (isNaN(semesterNum)) {
+            return res.status(400).json({ success: false, message: "Invalid Semester Format" });
+        }
+
+        const notes = await Note.find({ branch, semester: semesterNum }).sort({ createdAt: -1 });
+        const books = await Book.find({ branch, semester: semesterNum }).sort({ createdAt: -1 });
+        const pyqs = await PYQ.find({ branch, semester: semesterNum }).sort({ createdAt: -1 });
 
         res.json({
             success: true,

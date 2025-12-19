@@ -37,7 +37,26 @@ export default function SemesterResources({ branch, semester }) {
     const currentResources = resources[activeTab] || [];
     const CurrentTabInfo = tabs.find(t => t.id === activeTab);
 
-    if (!branch || !semester) return null;
+    if (!branch || !semester) {
+        return (
+            <div className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl p-6 text-white mb-8">
+                <div className="flex items-start justify-between gap-4">
+                    <div>
+                        <h3 className="text-lg font-bold mb-2">Setup Your Profile</h3>
+                        <p className="text-blue-100 text-sm mb-4">
+                            Please update your branch and semester to see personalized notes, books, and PYQs.
+                        </p>
+                        <a
+                            href="/student/profile"
+                            className="bg-white text-blue-600 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-50 transition-colors inline-block"
+                        >
+                            Update Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     if (loading) {
         return (
