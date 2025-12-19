@@ -122,7 +122,7 @@ const DropZone = ({ onFileUploaded, initialUrl = "" }) => {
                             <Upload size={24} />
                         </div>
                         <p className="text-sm font-medium text-gray-700">
-                            {isDragActive ? "Drop the file here" : "Click or drag to upload ID Card"}
+                            {isDragActive ? "Drop the file here" : "Click or drag to upload"}
                         </p>
                         <p className="text-xs text-gray-400 mt-1">
                             SVG, PNG, JPG or GIF (max. 5MB)

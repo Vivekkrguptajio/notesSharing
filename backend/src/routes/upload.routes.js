@@ -234,6 +234,33 @@ router.get("/public-stats", async (req, res) => {
     }
 });
 
+// Get Student Resources (Filtered by Branch & Semester)
+router.get("/student-resources", async (req, res) => {
+    try {
+        const { branch, semester } = req.query;
+
+        if (!branch || !semester) {
+            return res.status(400).json({ success: false, message: "Branch and Semester are required" });
+        }
+
+        const notes = await Note.find({ branch, semester }).sort({ createdAt: -1 });
+        const books = await Book.find({ branch, semester }).sort({ createdAt: -1 });
+        const pyqs = await PYQ.find({ branch, semester }).sort({ createdAt: -1 });
+
+        res.json({
+            success: true,
+            resources: {
+                notes,
+                books,
+                pyqs
+            }
+        });
+    } catch (error) {
+        console.error("Error fetching student resources:", error);
+        res.status(500).json({ success: false, message: "Failed to fetch resources" });
+    }
+});
+
 // Get Top 3 Uploaders
 router.get("/top-uploaders", async (req, res) => {
     try {

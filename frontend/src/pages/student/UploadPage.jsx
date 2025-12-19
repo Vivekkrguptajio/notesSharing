@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { ArrowLeft, Upload, FileText, BookOpen, HelpCircle, CheckCircle } from "lucide-react";
 import DropZone from "../../components/common/DropZone";
 import { getCurrentUser } from "../../api/auth.api";
@@ -9,6 +9,45 @@ export default function UploadPage() {
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState("");
     const user = getCurrentUser();
+    const location = useLocation();
+
+    useEffect(() => {
+        if (location.state?.prefill) {
+            const { type, topic, subject, branch, semester, author, examType, year } = location.state.prefill;
+
+            if (type === "Book") {
+                setActiveTab("books");
+                setBookForm(prev => ({
+                    ...prev,
+                    title: topic || "",
+                    subject: subject || "",
+                    branch: branch || "",
+                    semester: semester || "",
+                    author: author || ""
+                }));
+            } else if (type === "PYQ") {
+                setActiveTab("pyqs");
+                setPyqForm(prev => ({
+                    ...prev,
+                    title: topic || "",
+                    subject: subject || "",
+                    branch: branch || "",
+                    semester: semester || "",
+                    examType: examType || "Mid-1",
+                    year: year || new Date().getFullYear()
+                }));
+            } else {
+                setActiveTab("notes");
+                setNoteForm(prev => ({
+                    ...prev,
+                    title: topic || "",
+                    subject: subject || "",
+                    branch: branch || "",
+                    semester: semester || ""
+                }));
+            }
+        }
+    }, [location.state]);
 
     // Notes Form State
     const [noteForm, setNoteForm] = useState({

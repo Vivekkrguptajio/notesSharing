@@ -9,7 +9,11 @@ export default function NoteRequestForm({ onClose, onSuccess }) {
         topic: "",
         description: "",
         branch: user?.branch || "",
-        semester: user?.semester || ""
+        semester: user?.semester || "",
+        resourceType: "Note",
+        author: "",
+        examType: "Mid-1",
+        year: new Date().getFullYear()
     });
     const [loading, setLoading] = useState(false);
 
@@ -61,6 +65,23 @@ export default function NoteRequestForm({ onClose, onSuccess }) {
 
                 {/* Form */}
                 <form onSubmit={handleSubmit} className="p-5 space-y-4">
+                    {/* Resource Type */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Resource Type <span className="text-red-500">*</span>
+                        </label>
+                        <select
+                            required
+                            value={formData.resourceType}
+                            onChange={(e) => setFormData({ ...formData, resourceType: e.target.value })}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            <option value="Note">Note</option>
+                            <option value="Book">Book</option>
+                            <option value="PYQ">PYQ</option>
+                        </select>
+                    </div>
+
                     {/* Subject */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -76,20 +97,103 @@ export default function NoteRequestForm({ onClose, onSuccess }) {
                         />
                     </div>
 
-                    {/* Topic */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Topic <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                            type="text"
-                            required
-                            value={formData.topic}
-                            onChange={(e) => setFormData({ ...formData, topic: e.target.value })}
-                            placeholder="e.g., Binary Trees"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                    </div>
+                    {/* Dynamic Fields based on Type */}
+                    {formData.resourceType === "Note" && (
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Topic <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                required
+                                value={formData.topic}
+                                onChange={(e) => setFormData({ ...formData, topic: e.target.value })}
+                                placeholder="e.g., Binary Trees"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                        </div>
+                    )}
+
+                    {formData.resourceType === "Book" && (
+                        <>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Book Title <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    required
+                                    value={formData.topic}
+                                    onChange={(e) => setFormData({ ...formData, topic: e.target.value })}
+                                    placeholder="e.g., Introduction to Algorithms"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Author <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    required
+                                    value={formData.author}
+                                    onChange={(e) => setFormData({ ...formData, author: e.target.value })}
+                                    placeholder="e.g., Thomas H. Cormen"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                        </>
+                    )}
+
+                    {formData.resourceType === "PYQ" && (
+                        <>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Title / Exam Name <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    required
+                                    value={formData.topic}
+                                    onChange={(e) => setFormData({ ...formData, topic: e.target.value })}
+                                    placeholder="e.g., DSA Mid-1 2023"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Exam Type <span className="text-red-500">*</span>
+                                    </label>
+                                    <select
+                                        required
+                                        value={formData.examType}
+                                        onChange={(e) => setFormData({ ...formData, examType: e.target.value })}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    >
+                                        <option value="Mid-1">Mid-1</option>
+                                        <option value="Mid-2">Mid-2</option>
+                                        <option value="End Sem">End Sem</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Year <span className="text-red-500">*</span>
+                                    </label>
+                                    <input
+                                        type="number"
+                                        required
+                                        min="2000"
+                                        max={new Date().getFullYear()}
+                                        value={formData.year}
+                                        onChange={(e) => setFormData({ ...formData, year: e.target.value })}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                            </div>
+                        </>
+                    )}
+
 
                     {/* Description */}
                     <div>

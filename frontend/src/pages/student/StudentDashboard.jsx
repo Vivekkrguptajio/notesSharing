@@ -10,6 +10,7 @@ import Footer from "../../components/common/Footer";
 import NoteRequestForm from "../../components/NoteRequestForm";
 import MyNoteRequests from "../../components/MyNoteRequests";
 import UploaderNoteRequests from "../../components/UploaderNoteRequests";
+import SemesterResources from "../../components/SemesterResources";
 
 export default function StudentDashboard() {
     const navigate = useNavigate();
@@ -214,6 +215,11 @@ export default function StudentDashboard() {
                             );
                         })}
                     </div>
+                </div>
+
+                {/* Semester Resources (Top Picks) */}
+                <div className="mb-8">
+                    <SemesterResources branch={user?.branch} semester={user?.semester} />
                 </div>
 
                 {/* Uploader Guidelines Card - Only for Uploaders */}

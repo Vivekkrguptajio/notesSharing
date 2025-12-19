@@ -60,6 +60,10 @@ export default function UploaderNoteRequests() {
                     topic: request.topic,
                     branch: request.branch,
                     semester: request.semester,
+                    type: request.resourceType || "Note",
+                    author: request.author,
+                    examType: request.examType,
+                    year: request.year,
                     requestId: request._id
                 }
             }
@@ -141,7 +145,13 @@ export default function UploaderNoteRequests() {
                         >
                             <div className="flex items-start justify-between gap-3 mb-3">
                                 <div className="flex-1 min-w-0">
-                                    <h4 className="font-semibold text-gray-900 text-sm sm:text-base">
+                                    <h4 className="font-semibold text-gray-900 text-sm sm:text-base flex items-center gap-2">
+                                        <span className={`px-2 py-0.5 rounded textxs font-bold ${request.resourceType === 'Book' ? 'bg-purple-100 text-purple-700' :
+                                            request.resourceType === 'PYQ' ? 'bg-orange-100 text-orange-700' :
+                                                'bg-blue-100 text-blue-700'
+                                            }`}>
+                                            {request.resourceType || "Note"}
+                                        </span>
                                         {request.subject} - {request.topic}
                                     </h4>
                                     <p className="text-xs sm:text-sm text-gray-600 mt-1">
@@ -155,6 +165,18 @@ export default function UploaderNoteRequests() {
                                     {new Date(request.createdAt).toLocaleDateString()}
                                 </span>
                             </div>
+
+                            {/* Extra Details based on Type */}
+                            {request.resourceType === 'Book' && request.author && (
+                                <p className="text-sm text-gray-700 mb-2">
+                                    <span className="font-semibold">Author:</span> {request.author}
+                                </p>
+                            )}
+                            {request.resourceType === 'PYQ' && (
+                                <p className="text-sm text-gray-700 mb-2">
+                                    <span className="font-semibold">Exam:</span> {request.examType} ({request.year})
+                                </p>
+                            )}
 
                             {request.description && (
                                 <p className="text-sm text-gray-600 mb-3 bg-gray-50 p-2 rounded">

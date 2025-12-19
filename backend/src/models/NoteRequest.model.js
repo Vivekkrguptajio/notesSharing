@@ -46,6 +46,21 @@ const noteRequestSchema = new mongoose.Schema(
             type: String,
             enum: ["Note", "Book", "PYQ"],
         },
+        resourceType: {
+            type: String,
+            enum: ["Note", "Book", "PYQ"],
+            default: "Note",
+            required: true
+        },
+        author: {
+            type: String,
+        },
+        examType: {
+            type: String,
+        },
+        year: {
+            type: Number,
+        }
     },
     { timestamps: true }
 );

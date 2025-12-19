@@ -7,7 +7,7 @@ const router = express.Router();
 // Create a new note request (Student)
 router.post("/", async (req, res) => {
     try {
-        const { requestedBy, requesterName, subject, topic, description, branch, semester } = req.body;
+        const { requestedBy, requesterName, subject, topic, description, branch, semester, resourceType, author, examType, year } = req.body;
 
         // Validate required fields
         if (!requestedBy || !requesterName || !subject || !topic || !branch || !semester) {
@@ -24,7 +24,11 @@ router.post("/", async (req, res) => {
             topic,
             description,
             branch,
-            semester
+            semester,
+            resourceType: resourceType || "Note",
+            author,
+            examType,
+            year
         });
 
         await noteRequest.save();
